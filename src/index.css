@@ -50,6 +50,11 @@
   --sds-color-background-brand-default: #2C2C2C;
   --sds-color-border-brand-default: #2C2C2C;
   --sds-color-icon-brand-on-brand: #F5F5F5;
+
+
+  --sds-color-background-neutral-default: #5A5A5A;
+  --sds-color-text-neutral-on-neutral: #F3F3F3;
+  --sds-color-background-default-secondary: #F5F5F5;
 }
 
 #root {
@@ -74,4 +79,23 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+}
+
+.table-scroll .simplebar-track.simplebar-vertical {
+  width: 6px; 
+  margin-top: 20px;
+}
+
+.console-scroll .simplebar-track.simplebar-vertical {
+  width: 6px; 
+}
+
+
+.sb-scroll .simplebar-scrollbar::before {
+  background: var(--sds-color-background-neutral-default);
+  border-radius: 8px;
+}
+
+.sb-scroll .simplebar-track {
+  background: transparent;
 }

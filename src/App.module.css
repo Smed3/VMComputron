@@ -45,7 +45,18 @@
     width: 100%;
     height: 100%;
 
-    background-color: burlywood;
+    display: flex;
+    flex-direction: row;
+    gap: var(--gap-between-windows);
+
+    /* background-color: burlywood; */
+}
+
+.Code__display__wrapper {
+    width: 100%;
+    height: 100%;
+
+    background-color: coral;
 }
 
 .Console__wrapper {

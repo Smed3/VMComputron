@@ -2,6 +2,8 @@ import styles from './App.module.css';
 import Header from "./components/Header.jsx";
 import MemoryWindow from "./components/memoryWindow/MemoryWindow.jsx";
 import ConsoleWindow from "./components/consoleWindow/ConsoleWindow.jsx";
+import InstructionsWindow from './components/instructionsWindow/InstructionsWindow.jsx';
+import "simplebar-react/dist/simplebar.min.css";
 
 function App() {
 
@@ -22,7 +24,12 @@ function App() {
 
       <div className={styles.Main__content__wrapper}>
         <div className={styles.Left__content__wrapper}>
-          <div className={styles.Code__wrapper}>Code wrapper</div>
+          <div className={styles.Code__wrapper}>
+            <div className={styles.Code__display__wrapper}>
+              Code Display
+            </div>
+            <InstructionsWindow />
+          </div>
           <div className={styles.Console__wrapper}>
             <ConsoleWindow msgs={messages}/>
           </div>

@@ -3,6 +3,7 @@ import ConsoleButton from './ConsoleButton';
 import styles from './Console.module.css';
 import Trash from './icons/Trash.jsx';
 import Chevron from './icons/Chevron.jsx';
+import SimpleBar from 'simplebar-react';
 
 function ConsoleWindow({msgs=[]}) {
     const [collapsed, setCollapsed] = useState(false);
@@ -35,11 +36,17 @@ function ConsoleWindow({msgs=[]}) {
                     collapsed ? styles.ContentCollapsed : ''
                 }`}
             >
-                {messages.map((msg, index) => (
-                    <p key={index}>
-                        {msg}
-                    </p>
-                ))}
+                <SimpleBar 
+                    className={`${styles.Content__wrapper} sb-scroll console-scroll`}
+                    autoHide={false}
+                    scrollbarMaxSize={80}
+                >
+                    {messages.map((msg, index) => (
+                        <p key={index}>
+                            {msg}
+                        </p>
+                    ))}
+                </SimpleBar>
             </div>
             
         </div>
