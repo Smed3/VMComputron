@@ -28,7 +28,7 @@ const Tabs = ({ tabs, setTabs, activeTabId,setActiveTabId}) => {
                                 onClick={() => setActiveTabId(tab.id)}
                             >
                                 {tab.name}
-                                <span className={styles.TabClose} onClick={() => closeTab(tab.id)}>×</span>
+                                <span className={styles.TabClose} onClick={(e) => { e.stopPropagation(); closeTab(tab.id); }}>×</span>
                             </button>
                         ))}
                     </div>
