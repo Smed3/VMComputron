@@ -11,8 +11,8 @@ const Tabs = ({ tabs, setTabs, activeTabId,setActiveTabId}) => {
     const closeTab = (id) => {
         const filtered = tabs.filter(t => t.id !== id);
         setTabs(filtered);
-        if (activeTabId === id && filtered.length > 0) {
-            setActiveTabId(filtered[0].id);
+        if (activeTabId === id) {
+            setActiveTabId(filtered.length > 0 ? filtered[0].id : null);
         }
     };
 
