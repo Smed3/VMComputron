@@ -40,22 +40,26 @@ const Tabs = ({ tabs, setTabs, activeTabId,setActiveTabId}) => {
                 <div className={styles.TabsControls}>
                     <button
                         // onClick={() => onRun?.(activeTab?.content)}
-                        className={styles.ControlButton}>
+                        className={styles.ControlButton}
+                        aria-label="Reset">
                         <FiRotateCw />
                     </button>
                     <button
                         // onClick={() => onRun?.(activeTab?.content)}
-                        className={styles.ControlButton}>
+                        className={styles.ControlButton}
+                        aria-label="Step backward">
                         <FiSkipBack />
                     </button>
                     <button
                         // onClick={() => onNavBack?.(activeTab?.content)}
-                        className={styles.ControlButton}>
+                        className={styles.ControlButton}
+                        aria-label="Play">
                         <FiPlay />
                     </button>
                     <button
                         // onClick={() => onNavForward?.(activeTab?.content)}
-                        className={styles.ControlButton}>
+                        className={styles.ControlButton}
+                        aria-label="Step forward">
                         <FiSkipForward />
                     </button>
                 </div>
