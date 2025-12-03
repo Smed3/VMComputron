@@ -24,7 +24,7 @@ const Tabs = ({ tabs, setTabs, activeTabId,setActiveTabId}) => {
                         {tabs.map((tab, index) => (
                             <button
                                 key={tab.id}
-                                className={`${styles.TabButton} ${tab.id === activeTabId ? styles.TabActive : styles.TabInactive} ${index === tabs.length - 1 ? styles.TabInactiveLast : ''}`}
+                                className={`${styles.TabButton} ${tab.id === activeTabId ? styles.TabActive : styles.TabInactive}`}
                                 onClick={() => setActiveTabId(tab.id)}
                             >
                                 {tab.name}
