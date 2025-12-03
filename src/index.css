@@ -19,6 +19,7 @@
   -moz-osx-font-smoothing: grayscale;
 
   --gap-between-windows: 10px;
+  --min-app-height: 680px;
 
   --color--background-default-tertiary: #D9D9D9;
   --color--background-default-default: #FFFFFF;
@@ -77,7 +78,7 @@ body {
   margin: 0;
   display: flex;
   place-items: center;
-  min-width: 320px;
+  min-width: 480px;
   min-height: 100vh;
 }
 
@@ -98,4 +99,10 @@ body {
 
 .sb-scroll .simplebar-track {
   background: transparent;
+}
+
+@media (max-width: 1023px) {
+  body {
+    min-height: max(var(--min-app-height), 100vh);
+  }
 }

@@ -28,7 +28,8 @@
 }
 
 .Left__content__wrapper {
-    width: 100%;
+    flex: 1;
+    min-width: 0;
     height: 100%;
 
     display: flex;
@@ -68,8 +69,32 @@
 
 .Memory__wrapper {
     width: fit-content;
+    flex: 0 0 auto;
     /*min-width: fit-content;*/
     height: 100%;
 
     /*background-color: darkgoldenrod;*/
+}
+
+@media (max-width: 1023px) {
+    .App__wrapper {
+        height: max(var(--min-app-height), 100vh);
+    }
+
+    .Main__content__wrapper {
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+    }
+
+    .Left__content__wrapper {
+        width: 100%;
+        flex: 1;
+        min-height: 0;
+    }
+
+    .Memory__wrapper {
+        width: 100%;
+        height: fit-content;
+    }
 }
