@@ -23,7 +23,6 @@ const InstructionsInput = ({ activeTab, onChange, onType }) => {
                 className={styles.InstructionsMainArea}
                 value={activeTab.content}
                 onChange={handleChange}
-                placeholder="Write instruction code here..."
             />
         </div>
     );
