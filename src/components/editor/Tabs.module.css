@@ -1,0 +1,150 @@
+.TabsContainer {
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+.TabsHeader {
+    width: 100%;
+    height: 2rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+.TabsSpace {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: end;
+    flex-wrap: nowrap;
+}
+
+.TabsList {
+    width: fit-content;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-end;
+    flex-wrap: nowrap;
+}
+
+.TabButton {
+    outline: none;
+    border: none;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: nowrap;
+    transition: 0.3s all ease-in-out;
+}
+
+.TabActive {
+    width: 5rem;
+    height: 2rem;
+    border-radius: 0.5rem 0.5rem 0 0;
+    background-color: var(--color--background-default-default);
+    border-top: 1px solid var(--color--border-default-secondary);
+    border-right: 1px solid var(--color--border-default-secondary);
+    border-left: 1px solid var(--color--border-default-secondary);
+    color: var(--color--text-color);
+}
+
+.TabInactive:first-child {
+    border-radius: 0.5rem 0 0 0;
+}
+
+.TabInactive:last-child {
+    border-radius:0 0.5rem 0 0;
+}
+
+.TabInactive {
+    width: 4rem;
+    height: 1.5rem;
+    border-radius: 0;
+    background-color: var(--color--background-color-brand-default);
+    color: var(--color--text-brand-onbrand);
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.TabInactive:hover {
+    background-color: var(--color--background-hover-dark-button);
+}
+
+.TabClose {
+    font-size: 1rem;
+    font-weight: 400;
+    margin-left: 0.5rem;
+    cursor: pointer;
+}
+
+.TabAddButton {
+    width: 2.625rem;
+    height: 1.75rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: nowrap;
+    outline: none;
+    border: none;
+    border-radius: 0.5rem 0.5rem 0 0;
+    margin-left: 0.5rem;
+    background-color: var(--color--background-color-brand-default);
+    color: var(--color--text-brand-onbrand);
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.TabAddButton:hover {
+    background-color: var(--color--background-hover-dark-button);
+}
+
+.TabsControls {
+    width: fit-content;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-end;
+    flex-wrap: nowrap;
+}
+
+.ControlButton {
+    width: 2rem;
+    height: 1.75rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: nowrap;
+    outline: none;
+    border: none;
+    border-top: 1px solid var(--color--border-default-secondary);
+    color: var(--color--text-color);
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.ControlButton:last-child {
+    border-radius: 0 0.5rem 0 0;
+    border-right: 1px solid var(--color--border-default-secondary);
+}
+
+.ControlButton:first-child {
+    border-radius: 0.5rem 0 0 0;
+    border-left: 1px solid var(--color--border-default-secondary);
+}
+
+.TabContent {
+    width: 100%;
+    margin-top: 0.5rem;
+}
