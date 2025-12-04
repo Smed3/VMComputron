@@ -1,0 +1,41 @@
+.InstructionsContainer {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--color--background-default-default);
+
+    border-radius: 0 0 0.5rem 0.5rem;
+    border-bottom: 1px solid var(--color--border-default-secondary);
+    border-right: 1px solid var(--color--border-default-secondary);
+    border-left: 1px solid var(--color--border-default-secondary);
+    font-family: monospace;
+}
+
+.LineNumbers {
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem 1.5rem 0.2rem 0.5rem;
+    text-align: left;
+    user-select: none;
+}
+
+.LineNumber {
+    line-height: 1.25rem;
+}
+
+.InstructionsMainArea {
+    flex: 1;
+    padding: 0.5rem;
+    height: 28.825rem;
+    width: 100%;
+    border: none;
+    resize: none;
+    font-size: 0.875rem;
+    font-family: monospace;
+    line-height: 1.25rem;
+}
+
+.InstructionsMainArea:focus {
+    outline: none;
+}

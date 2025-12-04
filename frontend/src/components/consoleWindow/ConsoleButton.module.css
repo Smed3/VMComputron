@@ -1,0 +1,27 @@
+
+.ConsoleButton {
+    cursor: pointer;
+
+    display: flex;
+    width: 20px;
+    height: 20px;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 0.25rem;
+    stroke: var(--sds-color-icon-brand-on-brand);
+    border: var(--sds-size-stroke-border) solid var(--sds-color-border-brand-default);
+    background: var(--sds-color-background-brand-default);
+}
+
+.ConsoleButton:hover {
+    background-color: var(--color--background-hover-dark-button);
+}
+
+.ConsoleButton.Disabled {
+    cursor: default;
+
+    stroke: var(--sds-color-icon-disabled-on-disabled);
+    border: var(--sds-size-stroke-border) solid var(--sds-color-border-disabled-default);
+    background: var(--sds-color-background-disabled-default);
+}

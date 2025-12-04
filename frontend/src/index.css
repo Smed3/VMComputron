@@ -19,6 +19,7 @@
   -moz-osx-font-smoothing: grayscale;
 
   --gap-between-windows: 10px;
+  --min-app-height: 680px;
 
   --color--background-default-tertiary: #D9D9D9;
   --color--background-default-default: #FFFFFF;
@@ -39,6 +40,22 @@
   --color--text-color: #000000;
   --color--text-brand-onbrand: #F5F5F5;
   --color--text-default-secondary: #757575;
+
+
+  --sds-size-stroke-border: 1px;
+  
+  --sds-color-background-disabled-default: #D9D9D9;
+  --sds-color-border-disabled-default: #B3B3B3;
+  --sds-color-icon-disabled-on-disabled: #B3B3B3;
+
+  --sds-color-background-brand-default: #2C2C2C;
+  --sds-color-border-brand-default: #2C2C2C;
+  --sds-color-icon-brand-on-brand: #F5F5F5;
+
+
+  --sds-color-background-neutral-default: #5A5A5A;
+  --sds-color-text-neutral-on-neutral: #F3F3F3;
+  --sds-color-background-default-secondary: #F5F5F5;
 }
 
 #root {
@@ -61,6 +78,31 @@ body {
   margin: 0;
   display: flex;
   place-items: center;
-  min-width: 320px;
+  min-width: 480px;
   min-height: 100vh;
+}
+
+.table-scroll .simplebar-track.simplebar-vertical {
+  width: 6px; 
+  margin-top: 20px;
+}
+
+.console-scroll .simplebar-track.simplebar-vertical {
+  width: 6px; 
+}
+
+
+.sb-scroll .simplebar-scrollbar::before {
+  background: var(--sds-color-background-neutral-default);
+  border-radius: 8px;
+}
+
+.sb-scroll .simplebar-track {
+  background: transparent;
+}
+
+@media (max-width: 1023px) {
+  body {
+    min-height: max(var(--min-app-height), 100vh);
+  }
 }
