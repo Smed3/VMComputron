@@ -10,16 +10,38 @@ import {useState} from "react";
 function App() {
     const [editorFilter, setEditorFilter] = useState("");
 
+    const [editorFilter, setEditorFilter] = useState("");
+    const [backendStatus, setBackendStatus] = useState('Проверяю...'); // ← ДОБАВИТЬ
+
     const messages = [
     "Program started.",
     "Loading modules...",
     "Modules loaded successfully.",
+    "Backend: ${backendStatus}",
     "Executing main function...",
     "Error: Unable to fetch data from server.",
     "Retrying connection...",
     "Connection established.",
     "Program terminated."
   ];
+
+    useEffect(() => {
+        const checkBackend = async () => {
+            try {
+                const response = await axios.get('/api/status');
+                setBackendStatus(`✅ ${response.data}`);
+            } catch (error) {
+                setBackendStatus('❌ Не подключен');
+                console.error('Ошибка подключения к бэкенду:', error);
+            }
+        };
+
+        checkBackend();
+
+        // Проверять каждые 30 секунд
+        const interval = setInterval(checkBackend, 30000);
+        return () => clearInterval(interval);
+    }, []);
 
   return (
     <div className={styles.App__wrapper}>
