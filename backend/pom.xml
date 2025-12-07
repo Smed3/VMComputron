@@ -6,7 +6,6 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- Spring Boot parent для управления версиями -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -19,8 +18,7 @@
     <version>1.0.0</version>
     <name>vmcomputron-backend</name>
     <description>Backend for VMComputron project with integrated frontend</description>
-    
-    <!-- Указываем, что это Spring Boot приложение -->
+
     <packaging>jar</packaging>
 
     <properties>
@@ -31,7 +29,7 @@
         <skip.npm>false</skip.npm>
     </properties>
 
-    <!-- Зависимости проекта -->
+
     <dependencies>
         <!-- Spring Boot Starter Web (REST API, Tomcat) -->
         <dependency>
@@ -56,17 +54,17 @@
     </dependencies>
 
     <build>
-        <!-- Имя итогового JAR файла -->
+        <!-- Name of the resulting JAR file -->
         <finalName>${project.artifactId}</finalName>
         
         <plugins>
-            <!-- Плагин для сборки фронтенда через npm -->
+            <!-- Plugin for building a frontend via npm -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>3.1.0</version>
                 <executions>
-                    <!-- Установка зависимостей npm -->
+
                     <execution>
                         <id>npm-install</id>
                         <phase>generate-resources</phase>
@@ -83,7 +81,7 @@
                         </configuration>
                     </execution>
                     
-                    <!-- Сборка фронтенда -->
+                    <!-- front build -->
                     <execution>
                         <id>npm-build</id>
                         <phase>generate-resources</phase>
@@ -102,12 +100,12 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <!-- Проверяем, установлен ли npm -->
+
                     <executable>npm</executable>
                 </configuration>
             </plugin>
 
-            <!-- Копирование собранного фронтенда в ресурсы -->
+            <!-- Copying the assembled frontend to resources -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -133,7 +131,7 @@
                 </executions>
             </plugin>
 
-            <!-- Компилятор Java -->
+            <!-- Compiler Java -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -161,7 +159,7 @@
                 </executions>
             </plugin>
             
-            <!-- Плагин для чистки перед сборкой -->
+            <!-- Plugin for cleaning before assembly -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
@@ -180,7 +178,7 @@
             </plugin>
         </plugins>
         
-        <!-- Фильтрация ресурсов -->
+        <!-- Resource filtering -->
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -189,9 +187,9 @@
         </resources>
     </build>
 
-    <!-- Профили для разных окружений -->
+    <!-- Profiles for different environments -->
     <profiles>
-        <!-- Профиль разработки (по умолчанию) -->
+        <!-- Development profile (default) -->
         <profile>
             <id>dev</id>
             <activation>
@@ -203,7 +201,7 @@
             </properties>
         </profile>
 
-        <!-- Профиль продакшн -->
+        <!-- Production profile -->
         <profile>
             <id>prod</id>
             <properties>
@@ -212,7 +210,7 @@
             </properties>
             <build>
                 <plugins>
-                    <!-- Минификация и оптимизация для продакшн -->
+                    <!-- Minification and optimization for production -->
                     <plugin>
                         <groupId>org.springframework.boot</groupId>
                         <artifactId>spring-boot-maven-plugin</artifactId>
@@ -227,7 +225,7 @@
             </build>
         </profile>
 
-        <!-- Профиль для сборки без фронтенда -->
+        <!-- Profile for assembly without a frontend -->
         <profile>
             <id>backend-only</id>
             <properties>
@@ -236,16 +234,16 @@
         </profile>
     </profiles>
 
-    <!-- Репозитории Maven -->
+    <!-- Repositories Maven -->
     <repositories>
         <repository>
             <id>central</id>
             <url>https://repo.maven.apache.org/maven2</url>
         </repository>
-        <!-- Если нужны дополнительные репозитории -->
+        <!-- Need additional repositories -->
     </repositories>
 
-    <!-- Плагин-репозитории -->
+    <!-- Plugin repositories -->
     <pluginRepositories>
         <pluginRepository>
             <id>central</id>
