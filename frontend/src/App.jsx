@@ -1,5 +1,5 @@
 import styles from './App.module.css';
-import Header from "./components/Header/Header.jsx";
+import Header from "./components/header/Header.jsx";
 import MemoryWindow from "./components/memoryWindow/MemoryWindow.jsx";
 import ConsoleWindow from "./components/consoleWindow/ConsoleWindow.jsx";
 import InstructionsWindow from './components/instructionsWindow/InstructionsWindow.jsx';
