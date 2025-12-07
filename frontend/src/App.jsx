@@ -1,5 +1,5 @@
 import styles from './App.module.css';
-import Header from "./components/Header/Header.jsx";
+import Header from "./components/header/Header.jsx";
 import MemoryWindow from "./components/memoryWindow/MemoryWindow.jsx";
 import ConsoleWindow from "./components/consoleWindow/ConsoleWindow.jsx";
 import InstructionsWindow from './components/instructionsWindow/InstructionsWindow.jsx';
@@ -11,38 +11,38 @@ function App() {
     const [editorFilter, setEditorFilter] = useState("");
 
     const messages = [
-    "Program started.",
-    "Loading modules...",
-    "Modules loaded successfully.",
-    "Executing main function...",
-    "Error: Unable to fetch data from server.",
-    "Retrying connection...",
-    "Connection established.",
-    "Program terminated."
-  ];
+        "Program started.",
+        "Loading modules...",
+        "Modules loaded successfully.",
+        "Executing main function...",
+        "Error: Unable to fetch data from server.",
+        "Retrying connection...",
+        "Connection established.",
+        "Program terminated."
+    ];
 
-  return (
-    <div className={styles.App__wrapper}>
-      <Header />
+    return (
+        <div className={styles.App__wrapper}>
+            <Header />
 
-      <div className={styles.Main__content__wrapper}>
-        <div className={styles.Left__content__wrapper}>
-          <div className={styles.Code__wrapper}>
-            <div className={styles.Code__display__wrapper}>
-                <Editor setEditorFilter={setEditorFilter} />
+            <div className={styles.Main__content__wrapper}>
+                <div className={styles.Left__content__wrapper}>
+                    <div className={styles.Code__wrapper}>
+                        <div className={styles.Code__display__wrapper}>
+                            <Editor setEditorFilter={setEditorFilter} />
+                        </div>
+                        <InstructionsWindow editorFilter={editorFilter}/>
+                    </div>
+                    <div className={styles.Console__wrapper}>
+                        <ConsoleWindow msgs={messages}/>
+                    </div>
+                </div>
+                <div className={styles.Memory__wrapper}>
+                    <MemoryWindow />
+                </div>
             </div>
-              <InstructionsWindow editorFilter={editorFilter}/>
-          </div>
-          <div className={styles.Console__wrapper}>
-            <ConsoleWindow msgs={messages}/>
-          </div>
         </div>
-        <div className={styles.Memory__wrapper}>
-          <MemoryWindow />
-        </div>
-      </div>
-    </div>
-  )
+    )
 }
 
 export default App
