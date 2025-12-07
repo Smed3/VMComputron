@@ -26,7 +26,7 @@ function MemoryWindow() {
           onClick={toggleCollapsed}
         />
 
-        <h2 className={styles.Window__title}>CPU & Memorys</h2>
+        <h2 className={styles.Window__title}>CPU & Memory Hi</h2>
       </div>
 
       <div

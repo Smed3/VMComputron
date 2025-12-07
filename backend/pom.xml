@@ -39,32 +39,6 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- Spring Boot Starter Data JPA (если нужна БД) -->
-        <!--
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-        -->
-
-        <!-- База данных (например, PostgreSQL) -->
-        <!--
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        -->
-
-        <!-- Lombok для сокращения boilerplate кода (опционально) -->
-        <!--
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
-        -->
-
         <!-- Spring Boot DevTools для горячей перезагрузки -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -105,7 +79,7 @@
                             <arguments>
                                 <argument>install</argument>
                             </arguments>
-                            <skip>${skip.npm}</skip>
+<!--                            <skip>${skip.npm}</skip>-->
                         </configuration>
                     </execution>
                     
@@ -123,7 +97,7 @@
                                 <argument>run</argument>
                                 <argument>build</argument>
                             </arguments>
-                            <skip>${skip.npm}</skip>
+<!--                            <skip>${skip.npm}</skip>-->
                         </configuration>
                     </execution>
                 </executions>
@@ -168,16 +142,6 @@
                     <source>${java.version}</source>
                     <target>${java.version}</target>
                     <encoding>UTF-8</encoding>
-                    <annotationProcessorPaths>
-                        <!-- Если используете Lombok -->
-                        <!--
-                        <path>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                            <version>${lombok.version}</version>
-                        </path>
-                        -->
-                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
 
@@ -186,16 +150,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <excludes>
-                        <!-- Если используете Lombok -->
-                        <!--
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
-                        -->
-                    </excludes>
-                    <mainClass>com.vmcomputron.VmcomputronBackendApplication</mainClass>
+                    <mainClass>com.vmcomputron.VMComputronApplication</mainClass>
                 </configuration>
                 <executions>
                     <execution>
