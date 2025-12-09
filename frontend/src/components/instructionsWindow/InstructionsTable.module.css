@@ -52,3 +52,7 @@
 .Table__row__dark {
     background-color: var(--sds-color-background-default-secondary);
 }
+
+.Table__row__light {
+    background-color: var(--sds-color-background-default-default);
+}

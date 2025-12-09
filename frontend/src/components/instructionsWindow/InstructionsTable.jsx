@@ -93,7 +93,7 @@ function InstructionsTable({search='', editorFilter = ''}) {
                     </thead>
                     <tbody>
                         {filtered.map((row, index) => (
-                            <tr key={row.code} className={index % 2 !== 0 ? styles.Table__row__dark : ''}>
+                            <tr key={row.code} className={index % 2 !== 0 ? styles.Table__row__dark : styles.Table__row__light}>
                                 <td>{row.code}</td>
                                 <td>{row.instr}</td>
                                 <td>{row.attr}</td>
