@@ -93,6 +93,10 @@
   align-items: center;
 }
 
+.dropdown button svg {
+  fill: var(--color--default-text);
+}
+
 .dropdown button:hover {
   background-color: var(--color--header--background-dropdown-hover);
 }

@@ -17,6 +17,7 @@
 
 .MemoryButton:hover {
     background-color: var(--color--background-hover-button);
+    border: var(--sds-size-stroke-border) solid var(--color--background-hover-button);
 }
 
 .MemoryButton.Disabled {

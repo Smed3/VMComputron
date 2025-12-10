@@ -1,6 +1,8 @@
 import { useContext, useState } from 'react';
 import styles from './Header.module.css';
 import { ThemeContext } from '../../contexts/theme-context';
+import Sun from './icons/sun';
+import Moon from './icons/Moon';
 
 function Header() {
   const [openMenu, setOpenMenu] = useState(null);
@@ -160,7 +162,7 @@ function Header() {
                 Preferences
               </button>
               <button onClick={() => handleSettingsAction('theme')}>
-                Theme: {theme}
+                Theme {theme == 'light' ? <Sun/> : <Moon/>}
               </button>
               <div className={styles.divider}></div>
               <button onClick={() => handleSettingsAction('vmConfig')}>
