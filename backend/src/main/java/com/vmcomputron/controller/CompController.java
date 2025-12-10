@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api") // Более специфичный путь
+@RequestMapping("/api") //Путь для http запросов
 public class CompController {
-
+    //эндпоинты
     @GetMapping("/{type}/{address}")
     public ResponseEntity<?> getRegister(@PathVariable String type,
                                          @PathVariable int address) {

@@ -6,8 +6,8 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class WebSocketController {
-
+public class WebSocketController { // websocket
+    //если надо чтото новое отправить надо как в дб создать файл поддержку на примере greeting
     // Клиент отправляет на /app/hello → сервер broadcast на /topic/greetings
     @MessageMapping("/hello")
     @SendTo("/topic/greetings")
