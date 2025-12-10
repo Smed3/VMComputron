@@ -30,6 +30,127 @@ public class CvmRegisters {
 
     }
 
+
+    // Добавляем публичные геттеры
+    public static int getCpuError() {
+        return cpuError;
+    }
+
+    public static void setCpuError(int value) {
+        cpuError = value;
+    }
+
+    public static boolean isRunning() {
+        return running;
+    }
+
+    public static void setRunning(boolean value) {
+        running = value;
+    }
+
+    public static int getREG() {
+        return REG;
+    }
+
+    public static void setREG(int value) {
+        REG = value;
+    }
+
+    public static int getMEM() {
+        return MEM;
+    }
+
+    public static void setMEM(int value) {
+        MEM = value;
+    }
+
+    public static Switch getRegSwitch() {
+        return regSwitch;
+    }
+
+    public static void setRegSwitch(Switch value) {
+        regSwitch = value;
+    }
+
+    public static int getPC() {
+        return PC;
+    }
+
+    public static void setPC(int value) {
+        PC = value;
+    }
+
+    public static int getSP() {
+        return SP;
+    }
+
+    public static void setSP(int value) {
+        SP = value;
+    }
+
+    public static int getA() {
+        return A;
+    }
+
+    public static void setA(int value) {
+        A = value;
+    }
+
+    public static int getX() {
+        return X;
+    }
+
+    public static void setX(int value) {
+        X = value;
+    }
+
+    public static float getR() {
+        return R;
+    }
+
+    public static void setR(float value) {
+        R = value;
+    }
+
+    public static int getRH() {
+        return RH;
+    }
+
+    public static void setRH(int value) {
+        RH = value;
+    }
+
+    public static int getRL() {
+        return RL;
+    }
+
+    public static void setRL(int value) {
+        RL = value;
+    }
+
+    public static int[] getM() {
+        return M;
+    }
+
+    public static void setM(int[] values) {
+        if (values != null && values.length == M.length) {
+            System.arraycopy(values, 0, M, 0, values.length);
+        }
+    }
+
+    public static int getM(int index) {
+        if (index >= 0 && index < M.length) {
+            return M[index];
+        }
+        return 0;
+    }
+
+    public static void setM(int index, int value) {
+        if (index >= 0 && index < M.length) {
+            M[index] = value;
+        }
+    }
+
     static {
         regSwitch = CvmRegisters.Switch.selPC;
         PC = 0;
@@ -42,7 +163,7 @@ public class CvmRegisters {
         M = new int[65536];
     }
 
-    static enum RegMem {
+    public static enum RegMem {
         selREG,
         selMEM;
 
@@ -50,7 +171,7 @@ public class CvmRegisters {
         }
     }
 
-    static enum Switch {
+    public static enum Switch {
         selPC,
         selSP,
         selA,

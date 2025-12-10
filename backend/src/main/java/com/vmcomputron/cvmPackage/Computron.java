@@ -40,8 +40,6 @@ public class Computron extends JFrame {
         initScreen();
         initHelp();
         ProgramDeviceInit();
-        CvmDigital.displayAllRegisters(this);
-        CvmDigital.displayMEM(this, PC);
     }
 
     private void initComponents() {
@@ -148,8 +146,8 @@ public class Computron extends JFrame {
 
     public void displayPC(int value) { dispPC.setText(String.format("%05d", value)); }
     public void displaySP(int value) { dispSP.setText(String.format("%05d", value)); }
-    public void displayA(int value)  { dispA.setText(String.format("%05d", value & 0xFFFF)); }
-    public void displayX(int value)  { dispX.setText(String.format("%05d", value & 0xFFFF)); }
+    public void displayA(int value)  { dispA.setText(String.format("%05d", value )); }
+    public void displayX(int value)  { dispX.setText(String.format("%05d", value )); }
     public void displayRH(int value) { dispRH.setText(String.format("%05d", value & 0xFFFF)); }
     public void displayRL(int value) { dispRL.setText(String.format("%05d", value & 0xFFFF)); }
     public void displayR(float value) { dispR.setText(String.valueOf(value)); }
@@ -273,12 +271,7 @@ public class Computron extends JFrame {
     public void setAttr(int row, String s)   { helpTable.setValueAt(s, row, 2); }
 
     // ======================= main =======================
-    public static void main(String[] args) {
-//        EventQueue.invokeLater(() -> {
-//            try {
-//                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-//            } catch (Exception ignored) {}
-//            new Computron().setVisible(true);
-//        });
-    }
+//    public static void main(String[] args) {
+//
+//    }
 }

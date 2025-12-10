@@ -19,7 +19,7 @@
     <version>1.0.0</version>
     <name>vmcomputron-backend</name>
     <description>Backend for VMComputron project with integrated frontend</description>
-    
+
     <!-- Указываем, что это Spring Boot приложение -->
     <packaging>jar</packaging>
 
@@ -37,6 +37,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Добавлена зависимость для WebSocket -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
         </dependency>
 
         <!-- Spring Boot DevTools для горячей перезагрузки -->
@@ -58,7 +64,7 @@
     <build>
         <!-- Имя итогового JAR файла -->
         <finalName>${project.artifactId}</finalName>
-        
+
         <plugins>
             <!-- Плагин для сборки фронтенда через npm -->
             <plugin>
@@ -79,10 +85,10 @@
                             <arguments>
                                 <argument>install</argument>
                             </arguments>
-<!--                            <skip>${skip.npm}</skip>-->
+                            <!--                            <skip>${skip.npm}</skip>-->
                         </configuration>
                     </execution>
-                    
+
                     <!-- Сборка фронтенда -->
                     <execution>
                         <id>npm-build</id>
@@ -97,7 +103,7 @@
                                 <argument>run</argument>
                                 <argument>build</argument>
                             </arguments>
-<!--                            <skip>${skip.npm}</skip>-->
+                            <!--                            <skip>${skip.npm}</skip>-->
                         </configuration>
                     </execution>
                 </executions>
@@ -160,7 +166,7 @@
                     </execution>
                 </executions>
             </plugin>
-            
+
             <!-- Плагин для чистки перед сборкой -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -179,7 +185,7 @@
                 </configuration>
             </plugin>
         </plugins>
-        
+
         <!-- Фильтрация ресурсов -->
         <resources>
             <resource>
