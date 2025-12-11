@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api") //Путь для http запросов
-public class CompController {
+public class RegisterController {
     //эндпоинты
     @GetMapping("/{type}/{address}")
     public ResponseEntity<?> getRegister(@PathVariable String type,

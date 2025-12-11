@@ -5,6 +5,9 @@
 
 package com.vmcomputron.cvmPackage;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public class CvmRegisters {
     static int cpuError = 0;
     static boolean running = false;
@@ -19,6 +22,17 @@ public class CvmRegisters {
     static int RH;
     static int RL;
     static int[] M;
+
+    public CvmRegisters(int pc, int sp, int a, int x, float r, int rh, int rl) {
+        this.PC = pc;
+        this.SP = sp;
+        this.A = a;
+        this.X = x;
+        this.R = r;
+        this.RH = rh;
+        this.RL = rl;
+    }
+
 
     public CvmRegisters() {
     }
@@ -182,4 +196,36 @@ public class CvmRegisters {
         private Switch() {
         }
     }
+
+    public static void updateRegister(String registerName, Integer value){
+        switch(registerName.toUpperCase()){
+            case "PC":
+                PC = value;
+                break;
+            case "SP":
+                SP = value;
+                break;
+            case "A":
+                A = value;
+                break;
+            case "X":
+                X = value;
+                break;
+            case "R":
+                R = value;
+                break;
+            case "RH":
+                RH = value;
+                break;
+            case "RL":
+                RL = value;
+                break;
+            default : throw new IllegalArgumentException("Unknown register: " + registerName);
+        }
+    }
+
+    public static CvmRegisters getCurrentState() {
+        return new CvmRegisters(PC, SP, A, X, R, RH, RL);
+    }
+    
 }
