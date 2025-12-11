@@ -37,8 +37,8 @@ public class Register {
         // Автоматически формируем массив cpu[] в правильном порядке
         this.cpu = new int[16];
         for (int i = 0; i < 16; i++) {
-            int bitIndex = 15 - i;  // i=0 → бит 15 (левая лампочка), i=15 → бит 0
-            this.cpu[i] = (cpuStatusFlags & (1 << bitIndex)) != 0 ? 1 : 0;
+            int bitIndex = 15 - i;  // i=0 → бит 15 (самый левый), i=15 → бит 0 (самый правый)
+            this.cpu[i] = (newValue & (1 << bitIndex)) != 0 ? 1 : 0;
         }
     }
 
