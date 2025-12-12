@@ -2,6 +2,7 @@ package com.vmcomputron.controller;
 
 import com.vmcomputron.cvmPackage.CvmRegisters;
 import com.vmcomputron.model.Greeting;
+import com.vmcomputron.model.LoadStoreRequest;
 import com.vmcomputron.model.Register;
 import com.vmcomputron.model.RegisterUpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,12 +59,10 @@ public class WebSocketController { // websocket
             case "RL":
                 messagingTemplate.convertAndSend("/topic/register/RL", Register.rl(CvmRegisters.getRL()));
                 break;
-            case "R":
-                messagingTemplate.convertAndSend("/topic/register/R", Register.r(CvmRegisters.getR()));
-                break;
             default:
                 throw new IllegalArgumentException("Unknown register: " + request.register());
         }
+        messagingTemplate.convertAndSend("/topic/memory", Register.m(CvmRegisters.getM(CvmRegisters.getPC())));
     }
 
     //    client.publish({
@@ -83,47 +82,64 @@ public class WebSocketController { // websocket
 //                rl: regs.rl
 //    });
 //    });
+    @MessageMapping("/load")
+    public void handleLoad(@Payload LoadStoreRequest request) {
+        String reg = request.getSelectedRegister().toUpperCase();
+        int memValue = CvmRegisters.getM(CvmRegisters.getPC());
 
+        // Загружаем значение из памяти в выбранный регистр
+        switch (reg) {
+            case "PC" -> CvmRegisters.setPC(memValue);
+            case "SP" -> CvmRegisters.setSP(memValue);
+            case "A"  -> CvmRegisters.setA(memValue);
+            case "X"  -> CvmRegisters.setX(memValue);
+            case "RH" -> CvmRegisters.setRH(memValue);
+            case "RL" -> CvmRegisters.setRL(memValue);
+            default -> throw new IllegalArgumentException("Unsupported register: " + reg);
+        }
 
-//    @Scheduled(fixedRate = 2000)  // можно 100, 200, 1000 — как хочешь
-//    public void broadcastRegistersPeriodically() {
-//        // Отправляем каждый регистр в свой топик
-//        messagingTemplate.convertAndSend("/topic/register/PC",  Register.pc(CvmRegisters.getPC()));
-//        messagingTemplate.convertAndSend("/topic/register/SP",  Register.sp(CvmRegisters.getSP()));
-//        messagingTemplate.convertAndSend("/topic/register/A",   Register.a(CvmRegisters.getA()));
-//        messagingTemplate.convertAndSend("/topic/register/X",   Register.x(CvmRegisters.getX()));
-//        messagingTemplate.convertAndSend("/topic/register/RH",  Register.rh(CvmRegisters.getRH()));
-//        messagingTemplate.convertAndSend("/topic/register/RL",  Register.rl(CvmRegisters.getRL()));
-//        messagingTemplate.convertAndSend("/topic/register/R",   Register.r(CvmRegisters.getR()));
-//    }
-//    useEffect(() => {
-//        if (!client.current) return;
-//
-//    const subscriptions = [
-//        '/topic/register/PC',
-//                '/topic/register/SP',
-//                '/topic/register/A',
-//                '/topic/register/X',
-//                '/topic/register/RH',
-//                '/topic/register/RL',
-//                '/topic/register/R'
-//    ];
-//
-//        subscriptions.forEach(topic => {
-//                client.current.subscribe(topic, (message) => {
-//            const data = JSON.parse(message.body);
-//        setRegisters(prev => ({
-//                ...prev,
-//                [data.register.toLowerCase()]: data.newValue
-//            }));
-//        setCpuPanel(data.cpu);  // ← лампочки обновляются автоматически!
-//        });
-//    });
-//
-//        return () => {
-//                subscriptions.forEach(topic => client.current?.unsubscribe(topic));
-//    };
-//    }, []);
+        // Отправляем обновлённый регистр на отдельный топик
+        Register response = switch (reg) {
+            case "PC" -> Register.pc(memValue);
+            case "SP" -> Register.sp(memValue);
+            case "A"  -> Register.a(memValue);
+            case "X"  -> Register.x(memValue);
+            case "RH" -> Register.rh(memValue);
+            case "RL" -> Register.rl(memValue);
+            default -> throw new IllegalArgumentException();
+        };
+
+        messagingTemplate.convertAndSend("/topic/register/" + reg, response);
+
+        // Также отправляем новое значение M[PC] (оно не изменилось, но для синхронизации)
+        //messagingTemplate.convertAndSend("/topic/memory", Register.m(memValue));
+    }
+
+    // ================== STORE ==================
+    // Фронтенд отправляет: { "selectedRegister": "A" }
+    @MessageMapping("/store")
+    public void handleStore(@Payload LoadStoreRequest request) {
+        String reg = request.getSelectedRegister().toUpperCase();
+
+        // Получаем значение выбранного регистра
+        int regValue = switch (reg) {
+            case "PC" -> CvmRegisters.getPC();
+            case "SP" -> CvmRegisters.getSP();
+            case "A"  -> CvmRegisters.getA();
+            case "X"  -> CvmRegisters.getX();
+            case "RH" -> CvmRegisters.getRH();
+            case "RL" -> CvmRegisters.getRL();
+            default -> throw new IllegalArgumentException("Unsupported register: " + reg);
+        };
+
+        // Записываем в память
+        CvmRegisters.setM(CvmRegisters.getPC(), regValue);
+
+        int memValue = CvmRegisters.getM(CvmRegisters.getPC());
+
+        // Отправляем только обновлённое значение M[PC] + лампочки
+        messagingTemplate.convertAndSend("/topic/memory", Register.m(memValue));
+    }
 
 }
 

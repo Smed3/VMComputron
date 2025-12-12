@@ -4,52 +4,38 @@ import com.vmcomputron.cvmPackage.CvmRegisters;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
+//        CvmRegisters.setM(1, 123);
+//        CvmRegisters.setM(2, 11234);
+//        CvmRegisters.setM(3, 123456);
 @RestController
 @RequestMapping("/api") //Путь для http запросов
 public class EndpointController {
     //эндпоинты
 
     @GetMapping("/memory")
-    public String[][] getMemory(
-            @RequestParam("register") String registerParam) {
-
-        if (registerParam == null || registerParam.trim().isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Параметр 'register' обязателен");
-        }
-
-        int baseAddress;
-        try {
-            baseAddress = switch (registerParam.toUpperCase()) {
-                case "PC" -> CvmRegisters.getPC();
-                case "SP" -> CvmRegisters.getSP();
-                case "A"  -> CvmRegisters.getA();
-                case "X"  -> CvmRegisters.getX();
-                case "RH" -> CvmRegisters.getRH();
-                case "RL" -> CvmRegisters.getRL();
-                default -> Integer.parseInt(registerParam.trim(), 16);
-            };
-        } catch (NumberFormatException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Неверный регистр или адрес: " + registerParam);
-        }
-
-        int startAddress = (baseAddress & 0xFFFF) - 128;
-        if (startAddress < 0) startAddress = 0;
-        if (startAddress > 65536 - 256) startAddress = 65536 - 256;
-
+    public String[][] getMemory() {
+        int pc = CvmRegisters.getPC();  // всегда от PC
         String[][] grid = new String[16][16];
 
-        // Порядок: как у лампочек — слева направо, сверху вниз
         for (int row = 0; row < 16; row++) {
-            for (int col = 0; col < 16; col++) {
-                int address = startAddress + (row * 16 + col);
-                int value = (address < 65536) ? (CvmRegisters.getM(address) & 0xFF) : 0;
+            int addr = (pc + row) & 0xFFFF;
+            long value = CvmRegisters.getM(addr);  // long, чтобы не обрезать
 
-                // РОВНО 2 СИМВОЛА, ВЕРХНИЙ РЕГИСТР, БЕЗ 0x
-                grid[row][col] = String.format("%02X", value);
-                // Примеры: "00", "FF", "A5", "0A", "1F" — всегда 2 символа!
+            // Заполняем всю строку "00"
+            for (int col = 0; col < 16; col++) {
+                grid[row][col] = "00";
             }
+
+            // Разбиваем на байты: берём младшие 3 байта (24 бита) для 01 E2 40
+            // Поскольку 123456 = 0x01E240, байты: 01 E2 40 (big-endian)
+            byte b0 = (byte) ((value >> 16) & 0xFF);  // 01
+            byte b1 = (byte) ((value >> 8) & 0xFF);   // E2
+            byte b2 = (byte) (value & 0xFF);          // 40
+
+            // Кладём в правые столбцы: столбец 13=01, 14=E2, 15=40
+            grid[row][13] = String.format("%02X", b0 & 0xFF);
+            grid[row][14] = String.format("%02X", b1 & 0xFF);
+            grid[row][15] = String.format("%02X", b2 & 0xFF);
         }
 
         return grid;
