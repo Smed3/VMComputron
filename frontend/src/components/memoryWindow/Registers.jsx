@@ -1,10 +1,13 @@
 import styles from './Registers.module.css';
 import {useState} from "react";
 import RegistersBoard from "./RegistersBoard.jsx";
+import {useServerContext} from "../../contexts/ServerContext.jsx";
 
 function Registers({ className }) {
   const registers = ['PC', 'SP', 'A', 'X', 'RH', 'RL']
   const [selectedRegister, setSelectedRegister] = useState('PC');
+
+  const {storeToMemory, loadFromMemory} = useServerContext();
 
   return (
     <div className={`${styles.Registers} ${className || ''}`}>
@@ -29,6 +32,7 @@ function Registers({ className }) {
         <div className={styles.Buttons__wrapper}>
           <button
             className={styles.File__button}
+            onClick={() => loadFromMemory(selectedRegister)}
           >
             <svg
               // className={styles.File__button__icon}
@@ -45,6 +49,7 @@ function Registers({ className }) {
           </button>
           <button
             className={styles.File__button}
+            onClick={() => storeToMemory(selectedRegister)}
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path
@@ -60,7 +65,7 @@ function Registers({ className }) {
       </div>
 
       <RegistersBoard className={styles.Registers__board} register={selectedRegister} type={'cpu'} />
-      <RegistersBoard className={styles.Registers__board} register={selectedRegister} type={'memory'} />
+      <RegistersBoard className={styles.Registers__board} register={'MEM'} type={'memory'} />
     </div>
   );
 }

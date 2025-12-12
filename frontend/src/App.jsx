@@ -31,14 +31,14 @@ function App() {
   return (
     <div className={styles.App__wrapper}>
       <Header/>
-      <div>
-        <h2>WebSocket чат</h2>
-        <ul>
-          {messages.map((msg, i) => <li key={i}>{msg}</li>)}
-        </ul>
-        <input value={input} onChange={(e) => setInput(e.target.value)}/>
-        <button onClick={sendMessage}>Отправить</button>
-      </div>
+      {/*<div>*/}
+      {/*  <h2>WebSocket чат</h2>*/}
+      {/*  <ul>*/}
+      {/*    {messages.map((msg, i) => <li key={i}>{msg}</li>)}*/}
+      {/*  </ul>*/}
+      {/*  <input value={input} onChange={(e) => setInput(e.target.value)}/>*/}
+      {/*  <button onClick={sendMessage}>Отправить</button>*/}
+      {/*</div>*/}
       <div className={styles.Main__content__wrapper}>
         <div className={styles.Left__content__wrapper}>
           <div className={styles.Code__wrapper}>
