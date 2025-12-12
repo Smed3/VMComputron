@@ -1,10 +1,7 @@
 package com.vmcomputron.controller;
 
 import com.vmcomputron.cvmPackage.CvmRegisters;
-import com.vmcomputron.model.Greeting;
-import com.vmcomputron.model.LoadStoreRequest;
-import com.vmcomputron.model.Register;
-import com.vmcomputron.model.RegisterUpdateRequest;
+import com.vmcomputron.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -67,8 +64,14 @@ public class WebSocketController { // websocket
 
     @MessageMapping("/memoryUpdated")
     @SendTo("/topic/memory")
-    public Register handleRegisterUpdate() {
-        return Register.m(CvmRegisters.getM(CvmRegisters.getPC()));
+    public Register handleMemoryUpdate(@Payload MemoryUpdateRequest request) {
+        int currentPc = CvmRegisters.getPC();
+
+        // Обновляем память по адресу PC
+        CvmRegisters.setM(currentPc, request.newValue());
+
+        // Возвращаем обновлённую ячейку памяти как Register.m(...)
+        return Register.m(CvmRegisters.getM(currentPc));
     }
 
     //    client.publish({
