@@ -18,7 +18,7 @@
 
 .Column {
     height: 100%;
-    width: 5.125rem;
+    width: 4.25rem;
 
     display: flex;
     flex-direction: row;
@@ -112,7 +112,7 @@
     height: calc(100% - var(--title-header-height));
 
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(16, 1fr);
 }
 
