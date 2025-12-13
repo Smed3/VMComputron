@@ -7,8 +7,8 @@ public class Register {
     private final int[] cpu;
 
     static final int[] CPU_BIT_VALUES = {
-            100000, 40000, 20000, 10000, 4000, 2000, 1000,
-            400, 200, 100, 40, 20, 10, 4, 2, 1
+            32768, 16384, 8192, 4096, 2048, 1024, 512,
+            256, 128, 64, 32, 16, 8, 4, 2, 1
     };
 
     public Register(String register, int newValue) {
