@@ -7,11 +7,11 @@ export default defineConfig({
     '/api': 'http://localhost:8080',
     '/ws': {
       target: 'http://localhost:8080',
-      ws: true,  // важно для WebSocket
+      ws: true,
     },},
 
   build: {
-    outDir: 'dist',  // Убедитесь, что выходная папка - dist
+    outDir: 'dist',
     emptyOutDir: true
   }
 });

@@ -28,19 +28,22 @@ export function ServerContextProvider({ children }) {
       webSocketFactory: () => new SockJS('http://localhost:8080/ws'),
       reconnectDelay: 5000,
       onConnect: () => {
-        fetchMemory();
-
         console.log('Connected!');
         client.current.subscribe('/topic/greetings', (msg) => {
           const body = JSON.parse(msg.body);
           setMessages((prev) => [...prev, body.content]);
         });
 
+        client.current.subscribe('/topic/ram', (msg) => {
+          const data = JSON.parse(msg.body);
+          console.log(data);
+
+          setRam(data);
+        });
+
         client.current.subscribe('/topic/register/PC', (msg) => {
           const data = JSON.parse(msg.body);
           setPC([data.newValue, data.cpu]);
-
-          fetchMemory();
         });
 
         client.current.subscribe('/topic/register/SP', (msg) => {
@@ -71,14 +74,11 @@ export function ServerContextProvider({ children }) {
         client.current.subscribe('/topic/memory', (msg) => {
           const data = JSON.parse(msg.body);
           setMemory([data.newValue, data.cpu]);
-
-          fetchMemory();
         });
 
         client.current.subscribe('/topic/console', (msg) => {
           const data = JSON.parse(msg.body);
-          console.log(data)
-          setConsoleLines([...consoleLines, data.text])
+          setConsoleLines(prev => [...prev, data.text]);
         });        
         testConsole();
 
@@ -110,9 +110,9 @@ export function ServerContextProvider({ children }) {
       client.current.publish({
         destination: '/app/console/clear',
       });
+      setConsoleLines([]);
     }
   }
-
 
   function storeToMemory(register) {
     if (client.current && client.current.connected) {
@@ -166,17 +166,24 @@ export function ServerContextProvider({ children }) {
           newValue: value
         }),
       });
+
+      client.current.publish({
+        destination: '/app/memory',
+        body: JSON.stringify({
+
+        }),
+      });
     }
   }
 
-  async function fetchMemory() {
-    const response = await fetch("http://localhost:8080/api/memory");
-    if (!response.ok) {
-      throw new Error("Failed to fetch memory");
-    }
-    const data = await response.json();
-    setRam(data);
-  }
+  // async function fetchMemory() {
+  //   const response = await fetch("http://localhost:8080/api/memory");
+  //   if (!response.ok) {
+  //     throw new Error("Failed to fetch memory");
+  //   }
+  //   const data = await response.json();
+  //   setRam(data);
+  // }
 
   async function runProgram({
                                 code,
@@ -275,6 +282,9 @@ export function ServerContextProvider({ children }) {
           vmForward,
           runProgram,
 
+          consoleLines,
+          clearConsole,
+
           ram,
       }}>
           {children}
@@ -282,4 +292,5 @@ export function ServerContextProvider({ children }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useServerContext = () => useContext(ServerContext);
