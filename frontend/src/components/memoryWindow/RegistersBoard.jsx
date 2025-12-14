@@ -72,32 +72,32 @@ function RegistersBoard({ className, register, type }) {
   }
 
   return (
-    <div className={`${styles.RegistersBoard} ${className || ''}`}>
-      <div className={styles.Registers__wrapper}>
-        {currentRegisters.map((color, index) => (
-          <button
-            key={index}
-            className={`
+      <div className={`${styles.RegistersBoard} ${className || ''}`}>
+        <div className={styles.Registers__wrapper}>
+          {currentRegisters.map((color, index) => (
+              <button
+                  key={index}
+                  className={`
               ${styles.Register}
               ${colorToClass[color]}
               ${bulbs[index] === 1 ? styles.Active : ''}
             `}
-            onClick={() => handleActivatingRegister(index)}
-          >
+                  onClick={() => handleActivatingRegister(index)}
+              >
 
-          </button>
-        ))}
-      </div>
+              </button>
+          ))}
+        </div>
 
-      <div className={styles.Counter}>
-        <div className={styles.Counter__title__wrapper}>
-          <p className={styles.Counter__title}>{type === 'cpu' ? 'CPU' : 'Memory'}</p>
-        </div>
-        <div className={styles.Counter__window}>
-          <p className={styles.Counter__number}>{value}</p>
+        <div className={styles.Counter}>
+          <div className={styles.Counter__title__wrapper}>
+            <p className={styles.Counter__title}>{type === 'cpu' ? 'CPU' : 'Memory'}</p>
+          </div>
+          <div className={styles.Counter__window}>
+            <p className={styles.Counter__number}>{value}</p>
+          </div>
         </div>
       </div>
-    </div>
   );
 }
 

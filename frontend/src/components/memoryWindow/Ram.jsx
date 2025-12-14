@@ -13,45 +13,57 @@ function Ram({ className }) {
   const parts = ["part1", "part2", "part3", "part4"];
 
   return (
-    <div className={`${styles.Ram} ${className || ''}`}>
-      {parts.map((partName, partIndex) => (
-        <div key={partIndex} className={styles.Column}>
+      <div className={`${styles.Ram} ${className || ''}`}>
+        {parts.map((partName, partIndex) => (
+            <div key={partIndex} className={styles.Column}>
 
-          {/* Number column */}
-          <div className={styles.Number__column}>
-            <div className={styles.Number__column__header}>
-              <p>PC</p>
-            </div>
-            <div className={styles.Number__column__content}>
-              {Array.from({ length: 16 }).map((_, i) => (
-                <div key={i} className={styles.Number__cell}>
-                  <p className={styles.Cell__title}>{numbers[i + 16 * partIndex]}</p>
+              {/* Number column */}
+              <div className={styles.Number__column}>
+                <div className={styles.Number__column__header}>
+                  <p>PC</p>
                 </div>
-              ))}
-            </div>
-          </div>
+                <div className={styles.Number__column__content}>
+                  {Array.from({ length: 16 }).map((_, i) => (
+                      <div key={i} className={styles.Number__cell}>
+                        <p className={styles.Cell__title}>{numbers[i + 16 * partIndex]}</p>
+                      </div>
+                  ))}
+                </div>
+              </div>
 
-          {/* Memory column */}
-          <div className={styles.Mem__column}>
-            <div className={styles.Mem__column__header}></div>
-            <div className={styles.Mem__column__content}>
-              {ram?.[partName]?.flat().map((cell, i) => (
-                <div
-                  key={i}
-                  className={`
+              {/* Memory column */}
+              <div className={styles.Mem__column}>
+                <div className={styles.Mem__column__header}></div>
+                <div className={styles.Mem__column__content}>
+                  {ram?.[partName]?.flat().map((cell, i) => (
+                      <div
+                          key={i}
+                          className={`
                     ${styles.Cell} 
                     ${cell !== '00' ? styles.Cell__light__green : ''}
                   `}
-                >
-                  <p className={styles.Cell__title}>{cell}</p>
+                      >
+                        <p className={styles.Cell__title}>{cell}</p>
+                      </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </div>
+              </div>
 
-        </div>
-      ))}
-    </div>
+            </div>
+        ))}
+
+
+        {/*{ram?.map((row, rowIndex) =>*/}
+        {/*  row.map((cell, colIndex) => (*/}
+        {/*    <div*/}
+        {/*      className={styles.Cell}*/}
+        {/*      key={`${rowIndex}-${colIndex}`}*/}
+        {/*    >*/}
+        {/*      <p className={styles.Cell__title}>{cell}</p>*/}
+        {/*    </div>*/}
+        {/*  ))*/}
+        {/*)}*/}
+      </div>
   );
 }
 

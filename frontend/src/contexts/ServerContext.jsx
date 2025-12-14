@@ -149,24 +149,74 @@ export function ServerContextProvider({ children }) {
     setRam(data);
   }
 
+    async function vmRequest(url, body = null) {
+        const res = await fetch(`http://localhost:8080${url}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: body ? JSON.stringify(body) : null,
+        });
+
+        if (!res.ok) {
+            let message = "VM error";
+            try {
+                const data = await res.json();
+                message = data.error ?? message;
+            } catch {
+                message = await res.text();
+            }
+            throw new Error(message);
+        }
+
+        return res.json().catch(() => null);
+    }
+
+
+    async function vmReset() {
+      await vmRequest("/api/vm/reset");
+  }
+
+  async function vmStep(inputInt = null) {
+      await vmRequest("/api/vm/step", inputInt !== null ? { inputInt } : null);
+  }
+
+    async function vmRun(inputInt = null) {
+        await vmRequest("/api/vm/run", inputInt !== null ? { inputInt } : null);
+    }
+
+    async function vmBack() {
+        await vmRequest("/api/vm/back");
+    }
+
+    async function vmForward() {
+        await vmRequest("/api/vm/forward");
+    }
+
   return (
-    <ServerContext.Provider value={{
-      messages,
-      input,
-      setInput,
-      sendMessage,
+      <ServerContext.Provider value={{
+          messages,
+          input,
+          setInput,
+          sendMessage,
 
-      registers: {PC: PC, SP: SP, A: A, X: X, RH: RH, RL: RL, MEM: memory},
-      updateRegister,
-      updateMemory,
+          registers: {PC: PC, SP: SP, A: A, X: X, RH: RH, RL: RL, MEM: memory},
+          updateRegister,
+          updateMemory,
 
-      storeToMemory,
-      loadFromMemory,
+          storeToMemory,
+          loadFromMemory,
 
-      ram,
-    }}>
-      {children}
-    </ServerContext.Provider>
+          vmReset,
+          vmStep,
+          vmRun,
+          vmBack,
+          vmForward,
+
+          ram,
+      }}>
+          {children}
+      </ServerContext.Provider>
   );
 }
 
