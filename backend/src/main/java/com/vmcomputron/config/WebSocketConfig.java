@@ -7,19 +7,22 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
 @Configuration
-@EnableWebSocketMessageBroker  // Включает STOMP
+@EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic");  // Топики для подписки (broadcast)
-        config.setApplicationDestinationPrefixes("/app");  // Префикс для сообщений от клиента
+        // куда сервер будет "пушить" сообщения клиентам
+        config.enableSimpleBroker("/topic");
+
+        // куда клиент будет отправлять сообщения на сервер (если нужно)
+        config.setApplicationDestinationPrefixes("/app");
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws")
-                .setAllowedOrigins("http://localhost:5173")  // ← замени на setAllowedOrigins
-                .withSockJS();
+        // SockJS endpoint
+        registry.addEndpoint("/ws").setAllowedOriginPatterns("*").withSockJS();
+        // если хочешь без SockJS: registry.addEndpoint("/ws").setAllowedOriginPatterns("*");
     }
 }
