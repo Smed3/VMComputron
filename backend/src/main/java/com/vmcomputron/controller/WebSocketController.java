@@ -171,8 +171,8 @@ public class WebSocketController {
                 ConsoleLine.info("pong " + System.currentTimeMillis()));
     }
 
-    @MessageMapping("memoryUpdated")
-    @SendTo("/ram")
+    @MessageMapping("/memory")
+    @SendTo("/topic/ram")
     public MemoryGridResponse getFullMemory() {
         String[][] grid = new String[64][3];
 
