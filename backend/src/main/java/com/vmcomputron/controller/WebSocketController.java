@@ -2,101 +2,87 @@ package com.vmcomputron.controller;
 
 import com.vmcomputron.cvmPackage.CvmRegisters;
 import com.vmcomputron.model.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.Header;
+import com.vmcomputron.service.ConsoleService;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 
+import java.util.List;
+
 @Controller
-public class WebSocketController { // websocket
+public class WebSocketController {
 
-    private final SimpMessagingTemplate messagingTemplate;
+    private final SimpMessagingTemplate messaging;
+    private final ConsoleService console;
 
-    @Autowired
-    public WebSocketController(SimpMessagingTemplate messagingTemplate) {
-        this.messagingTemplate = messagingTemplate;
+    public WebSocketController(SimpMessagingTemplate messaging, ConsoleService console) {
+        this.messaging = messaging;
+        this.console = console;
     }
 
-
-    //если надо чтото новое отправить надо как в дб создать файл поддержку на примере greeting
-    // Клиент отправляет на /app/hello → сервер broadcast на /topic/greetings
+    // ==========================
+    // 0) TEST / HELLO
+    // Client -> /app/hello
+    // Server -> /topic/greetings
+    // ==========================
     @MessageMapping("/hello")
     @SendTo("/topic/greetings")
-    public Greeting handle(String message) {
-        return new Greeting("Привет от сервера: " + message);
+    public Greeting hello(String message) {
+        return new Greeting("Hello from server: " + message);
     }
 
-
+    // ==========================
+    // 1) REGISTERS UPDATE (from UI)
+    // Client -> /app/registerUpdated  { register: "A", newValue: 123 }
+    // Server pushes:
+    //   /topic/register/A (single register)
+    //   /topic/memory     (M[PC] for sync)
+    // ==========================
     @MessageMapping("/registerUpdated")
-    @SendTo("/topic/registers")
     public void handleRegisterUpdate(@Payload RegisterUpdateRequest request) {
-
         CvmRegisters.updateRegister(request.register(), request.newValue());
 
-        switch (request.register()) {
-            case "PC":
-                messagingTemplate.convertAndSend("/topic/register/PC", Register.pc(CvmRegisters.getPC()));
-                break;
-            case "SP":
-                messagingTemplate.convertAndSend("/topic/register/SP", Register.sp(CvmRegisters.getSP()));
-                break;
-            case "A":
-                messagingTemplate.convertAndSend("/topic/register/A", Register.a(CvmRegisters.getA()));
-                break;
-            case "X":
-                messagingTemplate.convertAndSend("/topic/register/X", Register.x(CvmRegisters.getX()));
-                break;
-            case "RH":
-                messagingTemplate.convertAndSend("/topic/register/RH", Register.rh(CvmRegisters.getRH()));
-                break;
-            case "RL":
-                messagingTemplate.convertAndSend("/topic/register/RL", Register.rl(CvmRegisters.getRL()));
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown register: " + request.register());
+        String reg = request.register().toUpperCase();
+
+        switch (reg) {
+            case "PC" -> messaging.convertAndSend("/topic/register/PC", Register.pc(CvmRegisters.getPC()));
+            case "SP" -> messaging.convertAndSend("/topic/register/SP", Register.sp(CvmRegisters.getSP()));
+            case "A"  -> messaging.convertAndSend("/topic/register/A",  Register.a(CvmRegisters.getA()));
+            case "X"  -> messaging.convertAndSend("/topic/register/X",  Register.x(CvmRegisters.getX()));
+            case "RH" -> messaging.convertAndSend("/topic/register/RH", Register.rh(CvmRegisters.getRH()));
+            case "RL" -> messaging.convertAndSend("/topic/register/RL", Register.rl(CvmRegisters.getRL()));
+            default -> throw new IllegalArgumentException("Unknown register: " + reg);
         }
-        messagingTemplate.convertAndSend("/topic/memory", Register.m(CvmRegisters.getM(CvmRegisters.getPC())));
+
+        // sync current memory cell at PC
+        messaging.convertAndSend("/topic/memory", Register.m(CvmRegisters.getM(CvmRegisters.getPC())));
     }
 
+    // ==========================
+    // 2) MEMORY UPDATE (from UI)
+    // Client -> /app/memoryUpdated { newValue: 123 }
+    // Server -> /topic/memory (updated M[PC])
+    // ==========================
     @MessageMapping("/memoryUpdated")
     @SendTo("/topic/memory")
     public Register handleMemoryUpdate(@Payload MemoryUpdateRequest request) {
-        int currentPc = CvmRegisters.getPC();
-
-        // Обновляем память по адресу PC
-        CvmRegisters.setM(currentPc, request.newValue());
-
-        // Возвращаем обновлённую ячейку памяти как Register.m(...)
-        return Register.m(CvmRegisters.getM(currentPc));
+        int pc = CvmRegisters.getPC();
+        CvmRegisters.setM(pc, request.newValue());
+        return Register.m(CvmRegisters.getM(pc));
     }
 
-    //    client.publish({
-//        destination: '/app/registerUpdated',
-//                body: JSON.stringify(42),                    // ← значение
-//                headers: { 'register': 'A' }                 // ← имя регистра
-//    });
-//    client.subscribe('/topic/registers', (msg) => {
-//    const regs = JSON.parse(msg.body);
-//        setRegisters({
-//                pc: regs.pc.toString(16).padStart(4, '0').toUpperCase(),
-//                sp: regs.sp,
-//                a: regs.a,
-//                x: regs.x,
-//                r: regs.r.toFixed(2),
-//                rh: regs.rh,
-//                rl: regs.rl
-//    });
-//    });
+    // ==========================
+    // 3) LOAD: M[PC] -> selected register
+    // Client -> /app/load { selectedRegister: "A" }
+    // Server -> /topic/register/A (new value)
+    // ==========================
     @MessageMapping("/load")
     public void handleLoad(@Payload LoadStoreRequest request) {
         String reg = request.getSelectedRegister().toUpperCase();
         int memValue = CvmRegisters.getM(CvmRegisters.getPC());
 
-        // Загружаем значение из памяти в выбранный регистр
         switch (reg) {
             case "PC" -> CvmRegisters.setPC(memValue);
             case "SP" -> CvmRegisters.setSP(memValue);
@@ -107,7 +93,6 @@ public class WebSocketController { // websocket
             default -> throw new IllegalArgumentException("Unsupported register: " + reg);
         }
 
-        // Отправляем обновлённый регистр на отдельный топик
         Register response = switch (reg) {
             case "PC" -> Register.pc(memValue);
             case "SP" -> Register.sp(memValue);
@@ -115,22 +100,21 @@ public class WebSocketController { // websocket
             case "X"  -> Register.x(memValue);
             case "RH" -> Register.rh(memValue);
             case "RL" -> Register.rl(memValue);
-            default -> throw new IllegalArgumentException();
+            default -> throw new IllegalArgumentException("Unsupported register: " + reg);
         };
 
-        messagingTemplate.convertAndSend("/topic/register/" + reg, response);
-
-        // Также отправляем новое значение M[PC] (оно не изменилось, но для синхронизации)
-        //messagingTemplate.convertAndSend("/topic/memory", Register.m(memValue));
+        messaging.convertAndSend("/topic/register/" + reg, response);
     }
 
-    // ================== STORE ==================
-    // Фронтенд отправляет: { "selectedRegister": "A" }
+    // ==========================
+    // 4) STORE: selected register -> M[PC]
+    // Client -> /app/store { selectedRegister: "A" }
+    // Server -> /topic/memory (new M[PC])
+    // ==========================
     @MessageMapping("/store")
     public void handleStore(@Payload LoadStoreRequest request) {
         String reg = request.getSelectedRegister().toUpperCase();
 
-        // Получаем значение выбранного регистра
         int regValue = switch (reg) {
             case "PC" -> CvmRegisters.getPC();
             case "SP" -> CvmRegisters.getSP();
@@ -141,14 +125,58 @@ public class WebSocketController { // websocket
             default -> throw new IllegalArgumentException("Unsupported register: " + reg);
         };
 
-        // Записываем в память
         CvmRegisters.setM(CvmRegisters.getPC(), regValue);
 
         int memValue = CvmRegisters.getM(CvmRegisters.getPC());
-
-        // Отправляем только обновлённое значение M[PC] + лампочки
-        messagingTemplate.convertAndSend("/topic/memory", Register.m(memValue));
+        messaging.convertAndSend("/topic/memory", Register.m(memValue));
     }
 
-}
+    // ==========================
+    // 5) CONSOLE
+    //
+    // Streaming new lines:
+    //   server pushes each new ConsoleLine to /topic/console
+    //   (done inside ConsoleService.append)
+    //
+    // Optional: get last N lines via WS:
+    // Client -> /app/console/tail { n: 50 }
+    // Server -> /topic/console/tail (List<ConsoleLine>)
+    // ==========================
+    public record ConsoleTailRequest(Integer n) {}
 
+    @MessageMapping("/console/tail")
+    public void consoleTail(@Payload ConsoleTailRequest req) {
+        int n = (req == null || req.n() == null) ? 50 : req.n();
+        List<ConsoleLine> lines = console.tail(n);
+        messaging.convertAndSend("/topic/console/tail", lines);
+    }
+
+    @MessageMapping("/console/clear")
+    public void consoleClear() {
+        console.clear();
+        // можно пушнуть инфо строку в поток
+        console.append(ConsoleLine.info("Console cleared"));
+    }
+
+
+    // ==========================
+// 6) WS SELF-TEST
+// Client -> /app/ws/ping
+// Server -> /topic/ws/pong
+// ==========================
+    @MessageMapping("/ws/ping")
+    public void wsPing() {
+        messaging.convertAndSend("/topic/ws/pong",
+                ConsoleLine.info("pong " + System.currentTimeMillis()));
+    }
+
+    // ==========================
+// 7) CONSOLE TEST (forces a line into /topic/console)
+// Client -> /app/console/test
+// Server -> /topic/console  (because ConsoleService.append() pushes there)
+// ==========================
+    @MessageMapping("/console/test")
+    public void consoleTest() {
+        console.append(ConsoleLine.out("WS console test " + System.currentTimeMillis()));
+    }
+}
