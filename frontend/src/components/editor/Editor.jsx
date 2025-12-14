@@ -8,9 +8,9 @@ import { useServerContext } from "../../contexts/ServerContext";
 const Editor = ({ setEditorFilter }) => {
     const {
         vmReset,
-        vmRun,
         vmBack,
         vmForward,
+        runProgram
     } = useServerContext();
 
     const [busy, setBusy] = useState(false);
@@ -40,14 +40,27 @@ const Editor = ({ setEditorFilter }) => {
         ));
     };
 
+    const onRun = async () => {
+        if (!activeTab?.content) return;
+
+        try {
+            await runProgram({
+                code: activeTab.content,
+                runAfterLoad: true,
+            });
+        } catch (e) {
+            setError(e.message);
+        }
+    };
+
     return (
         <div className={styles.EditorContainer}>
             <Tabs tabs={tabs}
                   setTabs={setTabs}
                   activeTabId={activeTabId}
                   setActiveTabId={setActiveTabId}
-                  onReset={vmReset}
-                  onRun={safe(vmRun)}
+                  onReset={safe(vmReset)}
+                  onRun={onRun}
                   onBack={safe(vmBack)}
                   onForward={safe(vmForward)}
                   disabled={busy}
