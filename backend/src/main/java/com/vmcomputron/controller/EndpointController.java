@@ -18,7 +18,7 @@ public class EndpointController {
     @GetMapping("/memory")
     public Map<String, String[][]> getMemory() {
         int pc = 0;
-        String[][] grid = new String[80][2];
+        String[][] grid = new String[64][3];
 //        CvmRegisters.setM(1, 123);
 //        CvmRegisters.setM(2, 11234);
 //        CvmRegisters.setM(3, 456123);
@@ -27,7 +27,7 @@ public class EndpointController {
 //        CvmRegisters.setM(6, 123456);
 //        CvmRegisters.setM(7, 123456);
 //        CvmRegisters.setM(8, 123456);
-        for (int row = 0; row < 80; row++) {
+        for (int row = 0; row < 64; row++) {
 
             if (!LoadStoreRequest.isValue(pc) && pc!=0){
                 row--;
@@ -40,7 +40,7 @@ public class EndpointController {
             long value = CvmRegisters.getM(addr);  // long, чтобы не обрезать
 
             // Заполняем всю строку "00"
-            for (int col = 0; col < 2; col++) {
+            for (int col = 0; col < 3; col++) {
                 grid[row][col] = "00";
             }
 
@@ -48,26 +48,25 @@ public class EndpointController {
             // Поскольку 123456 = 0x01E240, байты: 01 E2 40 (big-endian)
             byte b0 = (byte) ((value >> 16) & 0xFF);  // 01
             byte b1 = (byte) ((value >> 8) & 0xFF);   // E2
-
+            byte b2 = (byte) ((value >> 0) & 0xFF);   // E2
 
 
             grid[row][0] = String.format("%02X", b0 & 0xFF);
             grid[row][1] = String.format("%02X", b1 & 0xFF);
+            grid[row][2] = String.format("%02X", b2 & 0xFF);
             pc+=1;
         }
 
-        String[][] part1 = new String[16][2];
-        String[][] part2 = new String[16][2];
-        String[][] part3 = new String[16][2];
-        String[][] part4 = new String[16][2];
-        String[][] part5 = new String[16][2];
+        String[][] part1 = new String[16][3];
+        String[][] part2 = new String[16][3];
+        String[][] part3 = new String[16][3];
+        String[][] part4 = new String[16][3];
 
         for (int i = 0; i < 16; i++) {
             part1[i] = grid[i];
             part2[i] = grid[i + 16];
             part3[i] = grid[i + 32];
             part4[i] = grid[i + 48];
-            part5[i] = grid[i + 64];
         }
 
         // Создаем Map для JSON
@@ -76,7 +75,6 @@ public class EndpointController {
         result.put("part2", part2);
         result.put("part3", part3);
         result.put("part4", part4);
-        result.put("part5", part5);
 
 
         return result;
