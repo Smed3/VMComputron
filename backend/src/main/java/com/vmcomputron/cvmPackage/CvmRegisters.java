@@ -1,7 +1,7 @@
 package com.vmcomputron.cvmPackage;
 
-import com.vmcomputron.model.MemoryCellChangedEvent;
-import com.vmcomputron.model.RegisterChangedEvent;
+import com.vmcomputron.model.MemoryUpdateRequest;
+import com.vmcomputron.model.RegisterUpdateRequest;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -115,7 +115,7 @@ public class CvmRegisters {
         PC = value;
         // Добавляем событие
         if (eventPublisher != null) {
-            eventPublisher.publishEvent(new RegisterChangedEvent("PC", value));
+            eventPublisher.publishEvent(new RegisterUpdateRequest("PC", value));
         }
     }
 
@@ -126,7 +126,7 @@ public class CvmRegisters {
     public static void setSP(int value) {
         SP = value;
         if (eventPublisher != null) {
-            eventPublisher.publishEvent(new RegisterChangedEvent("SP", value));
+            eventPublisher.publishEvent(new RegisterUpdateRequest("SP", value));
         }
     }
 
@@ -137,7 +137,7 @@ public class CvmRegisters {
     public static void setA(int value) {
         A = value;
         if (eventPublisher != null) {
-            eventPublisher.publishEvent(new RegisterChangedEvent("A", value));
+            eventPublisher.publishEvent(new RegisterUpdateRequest("A", value));
         }
     }
 
@@ -148,7 +148,7 @@ public class CvmRegisters {
     public static void setX(int value) {
         X = value;
         if (eventPublisher != null) {
-            eventPublisher.publishEvent(new RegisterChangedEvent("X", value));
+            eventPublisher.publishEvent(new RegisterUpdateRequest("X", value));
         }
     }
 
@@ -167,7 +167,7 @@ public class CvmRegisters {
     public static void setRH(int value) {
         RH = value;
         if (eventPublisher != null) {
-            eventPublisher.publishEvent(new RegisterChangedEvent("RH", value));
+            eventPublisher.publishEvent(new RegisterUpdateRequest("RH", value));
         }
     }
 
@@ -178,7 +178,7 @@ public class CvmRegisters {
     public static void setRL(int value) {
         RL = value;
         if (eventPublisher != null) {
-            eventPublisher.publishEvent(new RegisterChangedEvent("RL", value));
+            eventPublisher.publishEvent(new RegisterUpdateRequest("RL", value));
         }
     }
 
@@ -202,9 +202,8 @@ public class CvmRegisters {
     public static void setM(int index, int value) {
         if (index >= 0 && index < M.length) {
             M[index] = value;
-            // Добавляем событие
             if (eventPublisher != null) {
-                eventPublisher.publishEvent(new MemoryCellChangedEvent(index));
+                eventPublisher.publishEvent(new MemoryUpdateRequest(index, value));
             }
         }
     }
