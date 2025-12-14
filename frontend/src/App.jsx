@@ -31,7 +31,7 @@ function App() {
       {/*  <button onClick={sendMessage}>Отправить</button>*/}
       {/*</div>*/}
       {showHint && (
-          <OnboardingHint onClose={() => setShowHint(false)} />
+        <OnboardingHint onClose={() => setShowHint(false)} />
       )}
       <div className={styles.Main__content__wrapper}>
         <div className={styles.Left__content__wrapper}>

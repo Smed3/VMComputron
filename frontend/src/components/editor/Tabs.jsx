@@ -2,7 +2,7 @@ import styles from './Tabs.module.css';
 import {FiPlus, FiPlay, FiSkipBack, FiSkipForward, FiRotateCw} from 'react-icons/fi';
 import { v4 as uuidv4 } from 'uuid';
 
-const Tabs = ({ tabs, setTabs, activeTabId,setActiveTabId}) => {
+const Tabs = ({ tabs, setTabs, activeTabId,setActiveTabId, onReset, onRun, onBack, onForward, disabled}) => {
     const addTab = () => {
         const newId = uuidv4();
         setTabs([...tabs, { id: newId, name: `Tab ${tabs.length + 1}`, content: "" }]);
@@ -43,25 +43,29 @@ const Tabs = ({ tabs, setTabs, activeTabId,setActiveTabId}) => {
 
                 <div className={styles.TabsControls}>
                     <button
-                        // onClick={() => onRun?.(activeTab?.content)}
+                        onClick={onReset}
+                        disabled={disabled}
                         className={styles.ControlButton}
                         aria-label="Reset">
                         <FiRotateCw />
                     </button>
                     <button
-                        // onClick={() => onRun?.(activeTab?.content)}
+                        onClick={onBack}
+                        disabled={disabled}
                         className={styles.ControlButton}
                         aria-label="Step backward">
                         <FiSkipBack />
                     </button>
                     <button
-                        // onClick={() => onNavBack?.(activeTab?.content)}
+                        onClick={onRun}
+                        disabled={disabled}
                         className={styles.ControlButton}
                         aria-label="Play">
                         <FiPlay />
                     </button>
                     <button
-                        // onClick={() => onNavForward?.(activeTab?.content)}
+                        onClick={onForward}
+                        disabled={disabled}
                         className={styles.ControlButton}
                         aria-label="Step forward">
                         <FiSkipForward />

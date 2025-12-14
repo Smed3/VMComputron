@@ -52,7 +52,7 @@
   --color--main-background: var(--color--default-tertiary);
   --color--window-background: var(--color--default-default);
   --color--default-border: var(--color--default-secondary);
-  
+
 
   /* Text colors */
   --color--default-text: #000000;
@@ -79,14 +79,13 @@
   --table-semi-light-color-second: #cccccc;
   --table-header-color: #1a1a1a;
 
-  
   /* Colors variables */
   --color--default-tertiary: #D9D9D9;
   --color--default-default: #FFFFFF;
   --color--default-secondary: #757575;
   --color--brand-default: #2C2C2C;
   --color--warning-tertiary: #fffbeb;
-  
+
   --color--brand-on-brand: #F5F5F5;
   --color--disabled-default: #B3B3B3;
   --color--neutral-default: #5A5A5A;
@@ -96,21 +95,21 @@
 :root[data-theme='dark'] {
   /* Hover */
   --color--background-hover-button: #1a1a1a;
-  
+
   /* Text */
   --color--default-text: #F5F5F5;
   --color--secondary-text: #f5f5f5;
-  
+
   /* Register backgrounds */
   --color--background-green-register: #1E3A28;
   --color--border-green-register: #3CB371;
-  
+
   --color--background-orange-register: #3A2F1A;
   --color--border-orange-register: #C97A1C;
-  
+
   --color--background-red-register: #3A1F1F;
   --color--border-red-register: #E04B4B;
-  
+
   --color--background-blue-register: #232046;
   --color--border-blue-register: #6A5CFF;
 
@@ -124,12 +123,12 @@
   --color--default-tertiary: #1F1F1F;
   --color--default-default: #121212;
   --color--default-secondary: #9E9E9E;
-  
+
   --color--brand-default: #282828;
   --color--brand-on-brand: #F5F5F5;
-  
+
   --color--warning-tertiary: #2A2415;
-  
+
   /* Neutral & disabled */
   --color--disabled-default: #5C5C5C;
   --color--neutral-default: #2B2B2B;
@@ -165,7 +164,7 @@ body {
 }
 
 .table-scroll .simplebar-track.simplebar-vertical {
-  width: 6px; 
+  width: 6px;
   margin-top: 20px;
 }
 

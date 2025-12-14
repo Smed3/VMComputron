@@ -21,6 +21,7 @@ export function ServerContextProvider({ children }) {
   const [memory, setMemory] = useState([0, []]);
   const [ram, setRam] = useState([]);
 
+  const [activeCode, setActiveCode] = useState("");
 
   useEffect(() => {
     client.current = new Client({
@@ -69,7 +70,6 @@ export function ServerContextProvider({ children }) {
 
         client.current.subscribe('/topic/memory', (msg) => {
           const data = JSON.parse(msg.body);
-          console.log(data)
           setMemory([data.newValue, data.cpu]);
 
           fetchMemory();
@@ -178,28 +178,107 @@ export function ServerContextProvider({ children }) {
     setRam(data);
   }
 
+  async function runProgram({
+                                code,
+                                inputInt,
+                                runAfterLoad = true,
+                                stepLimit = 1000,
+                                filename = "file.txt" }) {
+      try {
+          const body = { filename, code, runAfterLoad };
+          if (inputInt !== null) body.inputInt = inputInt;
+
+          const res = await fetch(`http://localhost:8080/api/program/text/run?stepLimit=${stepLimit}`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(body),
+          });
+
+          if (!res.ok) {
+              const text = await res.text();
+              throw new Error(text || "Program run failed");
+          }
+
+          const result = await res.json();
+
+          if (result.lastConsoleLine !== null) {
+              setMessages(prev => [...prev, result.lastConsoleLine]);
+          }
+
+          return result;
+      } catch (e) {
+          console.error("runProgram failed with error:", e);
+          throw e;
+      }
+  }
+
+  async function vmRequest(url, body = null) {
+      const res = await fetch(`http://localhost:8080${url}`, {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: body ? JSON.stringify(body) : null,
+      });
+
+      if (!res.ok) {
+          let message = "VM error";
+          try {
+              const data = await res.json();
+              message = data.error ?? message;
+          } catch {
+              message = await res.text();
+          }
+          throw new Error(message);
+      }
+
+      return res.json().catch(() => null);
+  }
+
+
+    async function vmReset() {
+      await vmRequest("/api/vm/reset");
+  }
+
+  async function vmStep(inputInt = null) {
+      await vmRequest("/api/vm/step", inputInt !== null ? { inputInt } : null);
+  }
+
+  async function vmBack() {
+      await vmRequest("/api/vm/back");
+  }
+
+  async function vmForward() {
+      await vmRequest("/api/vm/forward");
+  }
 
   return (
-    <ServerContext.Provider value={{
-      messages,
-      input,
-      setInput,
-      sendMessage,
+      <ServerContext.Provider value={{
+          messages,
+          input,
+          setInput,
+          sendMessage,
 
-      consoleLines,
-      clearConsole,
+          registers: {PC: PC, SP: SP, A: A, X: X, RH: RH, RL: RL, MEM: memory},
+          updateRegister,
+          updateMemory,
 
-      registers: {PC: PC, SP: SP, A: A, X: X, RH: RH, RL: RL, MEM: memory},
-      updateRegister,
-      updateMemory,
+          storeToMemory,
+          loadFromMemory,
 
-      storeToMemory,
-      loadFromMemory,
+          activeCode,
+          setActiveCode,
 
-      ram,
-    }}>
-      {children}
-    </ServerContext.Provider>
+          vmReset,
+          vmStep,
+          vmBack,
+          vmForward,
+          runProgram,
+
+          ram,
+      }}>
+          {children}
+      </ServerContext.Provider>
   );
 }
 
