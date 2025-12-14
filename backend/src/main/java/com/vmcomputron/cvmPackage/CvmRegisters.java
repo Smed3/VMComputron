@@ -23,6 +23,7 @@ public class CvmRegisters {
     static int RL;
     static int[] M;
 
+
     public CvmRegisters(int pc, int sp, int a, int x, float r, int rh, int rl) {
         this.PC = pc;
         this.SP = sp;
@@ -116,6 +117,7 @@ public class CvmRegisters {
 
     public static void setX(int value) {
         X = value;
+
     }
 
     public static float getR() {

@@ -1,8 +1,13 @@
 package com.vmcomputron.controller;
 
 import com.vmcomputron.cvmPackage.CvmRegisters;
+import com.vmcomputron.event.FullMemoryRequestedEvent;
+import com.vmcomputron.event.MemoryUpdatedEvent;
+import com.vmcomputron.event.RegisterUpdatedEvent;
 import com.vmcomputron.model.*;
 import com.vmcomputron.service.ConsoleService;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -17,10 +22,12 @@ public class WebSocketController {
 
     private final SimpMessagingTemplate messaging;
     private final ConsoleService console;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public WebSocketController(SimpMessagingTemplate messaging, ConsoleService console) {
+    public WebSocketController(SimpMessagingTemplate messaging, ConsoleService console, ApplicationEventPublisher eventPublisher) {
         this.messaging = messaging;
         this.console = console;
+        this.eventPublisher = eventPublisher;
     }
 
     // ==========================
@@ -45,13 +52,19 @@ public class WebSocketController {
     public void handleRegisterUpdate(@Payload RegisterUpdateRequest request) {
         CvmRegisters.updateRegister(request.register(), request.newValue());
 
-        String reg = request.register().toUpperCase();
+        // Публикуем событие
+        eventPublisher.publishEvent(new RegisterUpdatedEvent(request.register(), request.newValue()));
+    }
+
+    @EventListener
+    public void onRegisterUpdated(RegisterUpdatedEvent event) {
+        String reg = event.register().toUpperCase();
 
         switch (reg) {
             case "PC" -> messaging.convertAndSend("/topic/register/PC", Register.pc(CvmRegisters.getPC()));
             case "SP" -> messaging.convertAndSend("/topic/register/SP", Register.sp(CvmRegisters.getSP()));
-            case "A"  -> messaging.convertAndSend("/topic/register/A",  Register.a(CvmRegisters.getA()));
-            case "X"  -> messaging.convertAndSend("/topic/register/X",  Register.x(CvmRegisters.getX()));
+            case "A" -> messaging.convertAndSend("/topic/register/A", Register.a(CvmRegisters.getA()));
+            case "X" -> messaging.convertAndSend("/topic/register/X", Register.x(CvmRegisters.getX()));
             case "RH" -> messaging.convertAndSend("/topic/register/RH", Register.rh(CvmRegisters.getRH()));
             case "RL" -> messaging.convertAndSend("/topic/register/RL", Register.rl(CvmRegisters.getRL()));
             default -> throw new IllegalArgumentException("Unknown register: " + reg);
@@ -71,7 +84,17 @@ public class WebSocketController {
     public Register handleMemoryUpdate(@Payload MemoryUpdateRequest request) {
         int pc = CvmRegisters.getPC();
         CvmRegisters.setM(pc, request.newValue());
+
+        // Публикуем событие
+        eventPublisher.publishEvent(new MemoryUpdatedEvent(pc, request.newValue()));
+
         return Register.m(CvmRegisters.getM(pc));
+    }
+
+    @EventListener
+    public void onMemoryUpdated(MemoryUpdatedEvent event) {
+        // При изменении памяти обновляем всю таблицу памяти
+        messaging.convertAndSend("/topic/ram", buildFullMemoryGrid());
     }
 
     // ==========================
@@ -87,8 +110,8 @@ public class WebSocketController {
         switch (reg) {
             case "PC" -> CvmRegisters.setPC(memValue);
             case "SP" -> CvmRegisters.setSP(memValue);
-            case "A"  -> CvmRegisters.setA(memValue);
-            case "X"  -> CvmRegisters.setX(memValue);
+            case "A" -> CvmRegisters.setA(memValue);
+            case "X" -> CvmRegisters.setX(memValue);
             case "RH" -> CvmRegisters.setRH(memValue);
             case "RL" -> CvmRegisters.setRL(memValue);
             default -> throw new IllegalArgumentException("Unsupported register: " + reg);
@@ -97,12 +120,15 @@ public class WebSocketController {
         Register response = switch (reg) {
             case "PC" -> Register.pc(memValue);
             case "SP" -> Register.sp(memValue);
-            case "A"  -> Register.a(memValue);
-            case "X"  -> Register.x(memValue);
+            case "A" -> Register.a(memValue);
+            case "X" -> Register.x(memValue);
             case "RH" -> Register.rh(memValue);
             case "RL" -> Register.rl(memValue);
             default -> throw new IllegalArgumentException("Unsupported register: " + reg);
         };
+
+        // Публикуем событие об обновлении регистра
+        eventPublisher.publishEvent(new RegisterUpdatedEvent(reg, memValue));
 
         messaging.convertAndSend("/topic/register/" + reg, response);
     }
@@ -119,8 +145,8 @@ public class WebSocketController {
         int regValue = switch (reg) {
             case "PC" -> CvmRegisters.getPC();
             case "SP" -> CvmRegisters.getSP();
-            case "A"  -> CvmRegisters.getA();
-            case "X"  -> CvmRegisters.getX();
+            case "A" -> CvmRegisters.getA();
+            case "X" -> CvmRegisters.getX();
             case "RH" -> CvmRegisters.getRH();
             case "RL" -> CvmRegisters.getRL();
             default -> throw new IllegalArgumentException("Unsupported register: " + reg);
@@ -129,16 +155,18 @@ public class WebSocketController {
         CvmRegisters.setM(CvmRegisters.getPC(), regValue);
 
         int memValue = CvmRegisters.getM(CvmRegisters.getPC());
+
+        // Публикуем событие об обновлении памяти
+        eventPublisher.publishEvent(new MemoryUpdatedEvent(CvmRegisters.getPC(), memValue));
+
         messaging.convertAndSend("/topic/memory", Register.m(memValue));
     }
 
     // ==========================
     // 5) CONSOLE
-    //
     // Streaming new lines:
     //   server pushes each new ConsoleLine to /topic/console
     //   (done inside ConsoleService.append)
-    //
     // Optional: get last N lines via WS:
     // Client -> /app/console/tail { n: 50 }
     // Server -> /topic/console/tail (List<ConsoleLine>)
@@ -155,43 +183,67 @@ public class WebSocketController {
     @MessageMapping("/console/clear")
     public void consoleClear() {
         console.clear();
-        // можно пушнуть инфо строку в поток
         console.append(ConsoleLine.info("Console cleared"));
     }
 
-
     // ==========================
-// 6) WS SELF-TEST
-// Client -> /app/ws/ping
-// Server -> /topic/ws/pong
-// ==========================
+    // 6) WS SELF-TEST
+    // Client -> /app/ws/ping
+    // Server -> /topic/ws/pong
+    // ==========================
     @MessageMapping("/ws/ping")
     public void wsPing() {
         messaging.convertAndSend("/topic/ws/pong",
                 ConsoleLine.info("pong " + System.currentTimeMillis()));
     }
 
-    @MessageMapping("memoryUpdated")
-    @SendTo("/ram")
+    // ==========================
+    // 7) FULL MEMORY GRID
+    // Client -> /app/memory
+    // Server -> /topic/ram
+    // ==========================
+    @MessageMapping("/memory")
+    @SendTo("/topic/ram")
     public MemoryGridResponse getFullMemory() {
-        String[][] grid = new String[64][3];
+        // Публикуем событие
+        eventPublisher.publishEvent(new FullMemoryRequestedEvent());
+        return buildFullMemoryGrid();
+    }
 
-        int pc = 0; // Если нужно начинать с 0, или можно с CvmRegisters.getPC() и идти дальше
+    @EventListener
+    public void onFullMemoryRequested(FullMemoryRequestedEvent event) {
+        // Отправляем полную таблицу памяти
+        messaging.convertAndSend("/topic/ram", buildFullMemoryGrid());
+    }
+
+    // ==========================
+    // 8) CONSOLE TEST
+    // Client -> /app/console/test
+    // Server -> /topic/console
+    // ==========================
+    @MessageMapping("/console/test")
+    public void consoleTest() {
+        console.append(ConsoleLine.out("WS console test " + System.currentTimeMillis()));
+    }
+
+    // ==========================
+    // HELPER METHODS
+    // ==========================
+    private MemoryGridResponse buildFullMemoryGrid() {
+        String[][] grid = new String[64][3];
         int rowIndex = 0;
 
         for (int addr = 0; addr < 64 && rowIndex < 64; addr++) {
-            // Проверяем, валидное ли значение (как у тебя было)
             int currentAddr = addr & 0xFFFF;
             long value = CvmRegisters.getM(currentAddr);
 
-            if (!LoadStoreRequest.isValue((int)value) && addr != 0) {
-                // Пропускаем недопустимые значения — оставляем пустую строку "00 00 00"
+            if (!LoadStoreRequest.isValue((int) value) && addr != 0) {
                 grid[rowIndex][0] = "00";
                 grid[rowIndex][1] = "00";
                 grid[rowIndex][2] = "00";
             } else {
                 byte b0 = (byte) ((value >> 16) & 0xFF);
-                byte b1 = (byte) ((value >> 8)  & 0xFF);
+                byte b1 = (byte) ((value >> 8) & 0xFF);
                 byte b2 = (byte) (value & 0xFF);
 
                 grid[rowIndex][0] = String.format("%02X", b0 & 0xFF);
@@ -201,7 +253,6 @@ public class WebSocketController {
             rowIndex++;
         }
 
-        // Заполняем недостающие строки (на всякий случай)
         while (rowIndex < 64) {
             grid[rowIndex][0] = "00";
             grid[rowIndex][1] = "00";
@@ -209,22 +260,11 @@ public class WebSocketController {
             rowIndex++;
         }
 
-        // Делим на 4 части по 16 строк
-        String[][] part1 = Arrays.copyOfRange(grid, 0,  16);
+        String[][] part1 = Arrays.copyOfRange(grid, 0, 16);
         String[][] part2 = Arrays.copyOfRange(grid, 16, 32);
         String[][] part3 = Arrays.copyOfRange(grid, 32, 48);
         String[][] part4 = Arrays.copyOfRange(grid, 48, 64);
 
         return new MemoryGridResponse(part1, part2, part3, part4);
-    }
-
-    // ==========================
-// 7) CONSOLE TEST (forces a line into /topic/console)
-// Client -> /app/console/test
-// Server -> /topic/console  (because ConsoleService.append() pushes there)
-// ==========================
-    @MessageMapping("/console/test")
-    public void consoleTest() {
-        console.append(ConsoleLine.out("WS console test " + System.currentTimeMillis()));
     }
 }
