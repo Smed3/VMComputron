@@ -3,6 +3,7 @@ package com.vmcomputron.controller;
 import com.vmcomputron.cvmPackage.CvmRegisters;
 import com.vmcomputron.model.*;
 import com.vmcomputron.service.ConsoleService;
+import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -41,8 +42,10 @@ public class WebSocketController {
     //   /topic/register/A (single register)
     //   /topic/memory     (M[PC] for sync)
     // ==========================
+
+    @EventListener
     @MessageMapping("/registerUpdated")
-    public void handleRegisterUpdate(@Payload RegisterUpdateRequest request) {
+    public void handleRegisterUpdate(@Payload RegisterChangedEvent request) {
         CvmRegisters.updateRegister(request.register(), request.newValue());
 
         String reg = request.register().toUpperCase();
@@ -66,11 +69,12 @@ public class WebSocketController {
     // Client -> /app/memoryUpdated { newValue: 123 }
     // Server -> /topic/memory (updated M[PC])
     // ==========================
+    @EventListener
     @MessageMapping("/memoryUpdated")
     @SendTo("/topic/memory")
-    public Register handleMemoryUpdate(@Payload MemoryUpdateRequest request) {
+    public Register handleMemoryUpdate(@Payload MemoryCellChangedEvent request) {
         int pc = CvmRegisters.getPC();
-        CvmRegisters.setM(pc, request.newValue());
+        CvmRegisters.setM(pc, request.index());
         return Register.m(CvmRegisters.getM(pc));
     }
 
@@ -112,6 +116,8 @@ public class WebSocketController {
     // Client -> /app/store { selectedRegister: "A" }
     // Server -> /topic/memory (new M[PC])
     // ==========================
+
+
     @MessageMapping("/store")
     public void handleStore(@Payload LoadStoreRequest request) {
         String reg = request.getSelectedRegister().toUpperCase();
@@ -171,7 +177,8 @@ public class WebSocketController {
                 ConsoleLine.info("pong " + System.currentTimeMillis()));
     }
 
-    @MessageMapping("memoryUpdated")
+    @EventListener
+    @MessageMapping("/memory")
     @SendTo("/ram")
     public MemoryGridResponse getFullMemory() {
         String[][] grid = new String[64][3];

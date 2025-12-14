@@ -1,11 +1,11 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
-
 package com.vmcomputron.cvmPackage;
 
+import com.vmcomputron.model.MemoryCellChangedEvent;
+import com.vmcomputron.model.RegisterChangedEvent;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+
+import jakarta.annotation.PostConstruct;
 
 @Service
 public class CvmRegisters {
@@ -23,6 +23,28 @@ public class CvmRegisters {
     static int RL;
     static int[] M;
 
+    // Добавляем publisher для событий
+    private static ApplicationEventPublisher eventPublisher;
+
+    // Spring сам найдёт бин и заинжектит его
+    public CvmRegisters(ApplicationEventPublisher eventPublisher) {
+        CvmRegisters.eventPublisher = eventPublisher;
+    }
+
+    // Чтобы при старте приложения всё инициализировалось как раньше
+    @PostConstruct
+    public void init() {
+        regSwitch = Switch.selPC;
+        PC = 0;
+        SP = 0;
+        A = 0;
+        X = 0;
+        R = 0.0F;
+        RH = 0;
+        RL = 0;
+        M = new int[65536];
+    }
+
     public CvmRegisters(int pc, int sp, int a, int x, float r, int rh, int rl) {
         this.PC = pc;
         this.SP = sp;
@@ -33,7 +55,6 @@ public class CvmRegisters {
         this.RL = rl;
     }
 
-
     public CvmRegisters() {
     }
 
@@ -41,11 +62,11 @@ public class CvmRegisters {
         for(int k = 0; k < 65536; ++k) {
             M[k] = 0;
         }
-
     }
 
-
-    // Добавляем публичные геттеры
+    // ========================
+    // Твои геттеры — без изменений
+    // ========================
     public static int getCpuError() {
         return cpuError;
     }
@@ -92,6 +113,10 @@ public class CvmRegisters {
 
     public static void setPC(int value) {
         PC = value;
+        // Добавляем событие
+        if (eventPublisher != null) {
+            eventPublisher.publishEvent(new RegisterChangedEvent("PC", value));
+        }
     }
 
     public static int getSP() {
@@ -100,6 +125,9 @@ public class CvmRegisters {
 
     public static void setSP(int value) {
         SP = value;
+        if (eventPublisher != null) {
+            eventPublisher.publishEvent(new RegisterChangedEvent("SP", value));
+        }
     }
 
     public static int getA() {
@@ -108,6 +136,9 @@ public class CvmRegisters {
 
     public static void setA(int value) {
         A = value;
+        if (eventPublisher != null) {
+            eventPublisher.publishEvent(new RegisterChangedEvent("A", value));
+        }
     }
 
     public static int getX() {
@@ -116,6 +147,9 @@ public class CvmRegisters {
 
     public static void setX(int value) {
         X = value;
+        if (eventPublisher != null) {
+            eventPublisher.publishEvent(new RegisterChangedEvent("X", value));
+        }
     }
 
     public static float getR() {
@@ -132,6 +166,9 @@ public class CvmRegisters {
 
     public static void setRH(int value) {
         RH = value;
+        if (eventPublisher != null) {
+            eventPublisher.publishEvent(new RegisterChangedEvent("RH", value));
+        }
     }
 
     public static int getRL() {
@@ -140,6 +177,9 @@ public class CvmRegisters {
 
     public static void setRL(int value) {
         RL = value;
+        if (eventPublisher != null) {
+            eventPublisher.publishEvent(new RegisterChangedEvent("RL", value));
+        }
     }
 
     public static int[] getM() {
@@ -162,9 +202,14 @@ public class CvmRegisters {
     public static void setM(int index, int value) {
         if (index >= 0 && index < M.length) {
             M[index] = value;
+            // Добавляем событие
+            if (eventPublisher != null) {
+                eventPublisher.publishEvent(new MemoryCellChangedEvent(index));
+            }
         }
     }
 
+    // Твоя статическая инициализация — оставляем как есть
     static {
         regSwitch = CvmRegisters.Switch.selPC;
         PC = 0;
@@ -197,35 +242,37 @@ public class CvmRegisters {
         }
     }
 
+    // Твой updateRegister — оставляем полностью как был,
+    // но он теперь тоже вызывает сеттеры → события полетят автоматически!
     public static void updateRegister(String registerName, Integer value){
         switch(registerName.toUpperCase()){
             case "PC":
-                PC = value;
+                setPC(value);     // ← событие полетит
                 break;
             case "SP":
-                SP = value;
+                setSP(value);     // ← событие полетит
                 break;
             case "A":
-                A = value;
+                setA(value);      // ← событие полетит
                 break;
             case "X":
-                X = value;
+                setX(value);      // ← событие полетит
                 break;
             case "R":
                 R = value;
                 break;
             case "RH":
-                RH = value;
+                setRH(value);     // ← событие полетит
                 break;
             case "RL":
-                RL = value;
+                setRL(value);     // ← событие полетит
                 break;
-            default : throw new IllegalArgumentException("Unknown register: " + registerName);
+            default :
+                throw new IllegalArgumentException("Unknown register: " + registerName);
         }
     }
 
     public static CvmRegisters getCurrentState() {
         return new CvmRegisters(PC, SP, A, X, R, RH, RL);
     }
-    
 }
