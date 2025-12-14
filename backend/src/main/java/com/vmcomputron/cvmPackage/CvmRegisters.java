@@ -2,6 +2,7 @@ package com.vmcomputron.cvmPackage;
 
 import com.vmcomputron.model.MemoryUpdateRequest;
 import com.vmcomputron.model.RegisterUpdateRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -26,9 +27,10 @@ public class CvmRegisters {
     // Добавляем publisher для событий
     private static ApplicationEventPublisher eventPublisher;
 
-    // Spring сам найдёт бин и заинжектит его
-    public CvmRegisters(ApplicationEventPublisher eventPublisher) {
+    @Autowired
+    public void setApplicationEventPublisher(ApplicationEventPublisher eventPublisher) {
         CvmRegisters.eventPublisher = eventPublisher;
+        System.out.println("EventPublisher autowired: " + eventPublisher);
     }
 
     // Чтобы при старте приложения всё инициализировалось как раньше
@@ -182,15 +184,6 @@ public class CvmRegisters {
         }
     }
 
-    public static int[] getM() {
-        return M;
-    }
-
-    public static void setM(int[] values) {
-        if (values != null && values.length == M.length) {
-            System.arraycopy(values, 0, M, 0, values.length);
-        }
-    }
 
     public static int getM(int index) {
         if (index >= 0 && index < M.length) {
@@ -204,6 +197,7 @@ public class CvmRegisters {
             M[index] = value;
             if (eventPublisher != null) {
                 eventPublisher.publishEvent(new MemoryUpdateRequest(index, value));
+                eventPublisher.publishEvent(new RegisterUpdateRequest("M", value));
             }
         }
     }
