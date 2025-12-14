@@ -19,14 +19,14 @@ public class EndpointController {
     public Map<String, String[][]> getMemory() {
         int pc = 0;
         String[][] grid = new String[64][3];
-        CvmRegisters.setM(1, 123);
-        CvmRegisters.setM(2, 11234);
-        CvmRegisters.setM(3, 456123);
-        CvmRegisters.setM(4, 123456);
-        CvmRegisters.setM(5, 123456);
-        CvmRegisters.setM(6, 123456);
-        CvmRegisters.setM(7, 123456);
-        CvmRegisters.setM(8, 123456);
+//        CvmRegisters.setM(1, 123);
+//        CvmRegisters.setM(2, 11234);
+//        CvmRegisters.setM(3, 456123);
+//        CvmRegisters.setM(4, 123456);
+//        CvmRegisters.setM(5, 123456);
+//        CvmRegisters.setM(6, 123456);
+//        CvmRegisters.setM(7, 123456);
+//        CvmRegisters.setM(8, 123456);
         for (int row = 0; row < 64; row++) {
 
             if (!LoadStoreRequest.isValue(pc) && pc!=0){
