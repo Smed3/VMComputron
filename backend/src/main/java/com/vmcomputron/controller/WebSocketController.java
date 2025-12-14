@@ -9,6 +9,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -168,6 +169,53 @@ public class WebSocketController {
     public void wsPing() {
         messaging.convertAndSend("/topic/ws/pong",
                 ConsoleLine.info("pong " + System.currentTimeMillis()));
+    }
+
+    @MessageMapping("memoryUpdated")
+    @SendTo("/ram")
+    public MemoryGridResponse getFullMemory() {
+        String[][] grid = new String[64][3];
+
+        int pc = 0; // Если нужно начинать с 0, или можно с CvmRegisters.getPC() и идти дальше
+        int rowIndex = 0;
+
+        for (int addr = 0; addr < 64 && rowIndex < 64; addr++) {
+            // Проверяем, валидное ли значение (как у тебя было)
+            int currentAddr = addr & 0xFFFF;
+            long value = CvmRegisters.getM(currentAddr);
+
+            if (!LoadStoreRequest.isValue((int)value) && addr != 0) {
+                // Пропускаем недопустимые значения — оставляем пустую строку "00 00 00"
+                grid[rowIndex][0] = "00";
+                grid[rowIndex][1] = "00";
+                grid[rowIndex][2] = "00";
+            } else {
+                byte b0 = (byte) ((value >> 16) & 0xFF);
+                byte b1 = (byte) ((value >> 8)  & 0xFF);
+                byte b2 = (byte) (value & 0xFF);
+
+                grid[rowIndex][0] = String.format("%02X", b0 & 0xFF);
+                grid[rowIndex][1] = String.format("%02X", b1 & 0xFF);
+                grid[rowIndex][2] = String.format("%02X", b2 & 0xFF);
+            }
+            rowIndex++;
+        }
+
+        // Заполняем недостающие строки (на всякий случай)
+        while (rowIndex < 64) {
+            grid[rowIndex][0] = "00";
+            grid[rowIndex][1] = "00";
+            grid[rowIndex][2] = "00";
+            rowIndex++;
+        }
+
+        // Делим на 4 части по 16 строк
+        String[][] part1 = Arrays.copyOfRange(grid, 0,  16);
+        String[][] part2 = Arrays.copyOfRange(grid, 16, 32);
+        String[][] part3 = Arrays.copyOfRange(grid, 32, 48);
+        String[][] part4 = Arrays.copyOfRange(grid, 48, 64);
+
+        return new MemoryGridResponse(part1, part2, part3, part4);
     }
 
     // ==========================
