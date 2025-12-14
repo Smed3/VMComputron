@@ -1,25 +1,135 @@
 .Ram {
-    width: 22rem;
+    width: fit-content;
     height: 19rem;
 
-    display: grid;
-    grid-template-columns: repeat(16, 1fr);
-    grid-template-rows: repeat(16, 1fr);
-    gap: 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: nowrap;
 
     border-radius: 0.25rem;
     border: 1px solid var(--color--default-border);
+
+    --title-header-height: 1rem;
+
+    overflow: hidden;
 }
 
-.Cell {
-    width: 100%;
+.Column {
     height: 100%;
+    width: 5.125rem;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+.Number__column {
+    height: 100%;
+    width: 1.125rem;
 
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     flex-wrap: nowrap;
+}
+
+.Number__column__header {
+    width: 100%;
+    height: var(--title-header-height);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    background-color: var(--table-header-color);
+}
+
+.Number__column__content {
+    width: 100%;
+    height: calc(100% - var(--title-header-height));
+
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    grid-template-rows: repeat(16, 1fr);
+    gap: 0;
+}
+
+.Number__cell {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+.Number__cell:nth-child(even) {
+    background-color: var(--table-semi-light-color-second);
+}
+
+.Number__cell:nth-child(odd) {
+    background-color: var(--table-semi-light-color);
+}
+
+
+.Mem__column {
+    height: 100%;
+    flex: 1;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+.Mem__column__header {
+    width: 100%;
+    height: var(--title-header-height);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    background-color: var(--table-header-color);
+}
+
+.Mem__column__header p, .Number__column__header p {
+    font-size: 0.75rem;
+    font-weight: 500;
+
+    color: var(--color--secondary-text);
+}
+
+.Mem__column__content {
+    width: 100%;
+    height: calc(100% - var(--title-header-height));
+
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(16, 1fr);
+}
+
+.Cell {
+    width: calc(100% - 0.125rem);
+    height: calc(100% - 0.125rem);
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+.Cell__light__green {
+    border-radius: 0.125rem;
+    background-color: var(--color--light-green);
 }
 
 .Cell__title {
