@@ -15,7 +15,6 @@ import SockJS from 'sockjs-client';
 import {useServerContext} from "./contexts/ServerContext.jsx";
 
 function App() {
-  const [editorFilter, setEditorFilter] = useState("");
   const [showHint, setShowHint] = useState(true);
   const {messages, input, setInput, sendMessage} = useServerContext();
 
@@ -39,7 +38,7 @@ function App() {
             <div className={styles.Code__display__wrapper}>
               <Editor setEditorFilter={setEditorFilter}/>
             </div>
-            <InstructionsWindow editorFilter={editorFilter}/>
+            <InstructionsWindow />
           </div>
           <div className={styles.Console__wrapper}>
             <ConsoleWindow/>

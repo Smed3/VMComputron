@@ -4,14 +4,13 @@ import InstructionsTable from './InstructionsTable.jsx';
 import styles from './InstructionsWindow.module.css';
 import SearchInputSection from './SearchInputSection.jsx';
 
-function InstructionsWindow({ editorFilter }) {
+function InstructionsWindow() {
     const [searchInput, setSearchInput] = useState('');
-
 
     return (
         <div className={styles.InstructionsWindow}>
             <SearchInputSection input={searchInput} setInput={setSearchInput} />
-            <InstructionsTable search={searchInput} editorFilter={editorFilter}/>
+            <InstructionsTable search={searchInput}/>
         </div>
     )
 }
