@@ -10,7 +10,7 @@ function Ram({ className }) {
 
   const {ram} = useServerContext();
 
-  const parts = ["part1", "part2", "part3", "part4", "part5"];
+  const parts = ["part1", "part2", "part3", "part4"];
 
   return (
     <div className={`${styles.Ram} ${className || ''}`}>
@@ -25,7 +25,7 @@ function Ram({ className }) {
             <div className={styles.Number__column__content}>
               {Array.from({ length: 16 }).map((_, i) => (
                 <div key={i} className={styles.Number__cell}>
-                  <p className={styles.Cell__title}>{i + 16 * partIndex}</p>
+                  <p className={styles.Cell__title}>{numbers[i + 16 * partIndex]}</p>
                 </div>
               ))}
             </div>
