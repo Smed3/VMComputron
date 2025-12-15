@@ -27,7 +27,6 @@ public class ProgramRAMController {
         ProgramParseResponse resp = programFileService.saveAndParseViaPython(file);
 
         if (resp.ok()) {
-            console.append(ConsoleLine.info("Saved to: " + safe(resp.savedPath())));
             console.append(ConsoleLine.info("Parsing: OK"));
 
             if (resp.parsed() != null) {
