@@ -36,8 +36,6 @@ export function ServerContextProvider({ children }) {
 
         client.current.subscribe('/topic/ram', (msg) => {
           const data = JSON.parse(msg.body);
-          console.log(data);
-
           setRam(data);
         });
 
@@ -80,11 +78,10 @@ export function ServerContextProvider({ children }) {
           const data = JSON.parse(msg.body);
           setConsoleLines(prev => [...prev, data.text]);
         });        
-        testConsole();
+        // testConsole();
 
       },
       onStompError: (frame) => {
-        console.log("dwdw");
         console.error('Error', frame);
       }
     });
