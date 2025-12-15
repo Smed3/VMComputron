@@ -6,7 +6,7 @@ import { useServerContext } from "../../contexts/ServerContext";
 import { useEditorContext } from "../../contexts/EditorContext.jsx";
 
 
-const Editor = ({ setEditorFilter }) => {
+const Editor = () => {
     const {
         vmReset,
         vmBack,
@@ -68,7 +68,7 @@ const Editor = ({ setEditorFilter }) => {
             />
             <InstructionsInput activeTab={activeTab}
                                onChange={updateTabContent}
-                               onType={setEditorFilter}
+                               // onType={}
             />
         </div>
     );
