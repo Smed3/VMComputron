@@ -1,7 +1,7 @@
 import SimpleBar from 'simplebar-react';
 import styles from './InstructionsTable.module.css';
 
-function InstructionsTable({search='', editorFilter = ''}) {
+function InstructionsTable({search=''}) {
 
     const INSTRUCTIONS = [
         { code: "000", instr: "NOP",  attr: "-"   },
@@ -63,7 +63,6 @@ function InstructionsTable({search='', editorFilter = ''}) {
     ];
 
     const searchQuery = search.trim().toLowerCase();
-    const editorFilterQuery  = editorFilter.trim().toLowerCase();
 
     const matches = (row, q) =>
         row.code.toLowerCase().startsWith(q) ||
@@ -72,7 +71,7 @@ function InstructionsTable({search='', editorFilter = ''}) {
 
 
     const filtered = INSTRUCTIONS.filter(row =>
-        matches(row, searchQuery) && matches(row, editorFilterQuery)
+        matches(row, searchQuery)
     );
 
 
