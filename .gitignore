@@ -1,4 +1,0 @@
-.vscode/
-
-# Ignore accidental root-level npm lockfile
-package-lock.json

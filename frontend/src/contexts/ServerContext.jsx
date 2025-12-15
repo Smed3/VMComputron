@@ -256,6 +256,40 @@ export function ServerContextProvider({ children }) {
       await vmRequest("/api/vm/forward");
   }
 
+    async function uploadProgramFile(file, { runAfterLoad = true, stepLimit = 1000 } = {}) {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('runAfterLoad', String(runAfterLoad));
+      formData.append('stepLimit', String(stepLimit));
+
+      const res = await fetch('http://localhost:8080/api/program/file', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!res.ok) {
+        let message = 'Upload failed';
+        try {
+          const data = await res.json();
+          message = data.error ?? message;
+        } catch {
+          message = await res.text();
+        }
+        throw new Error(message);
+      }
+
+      // Response could be JSON with run result or status; try to parse but tolerate empty
+      try {
+        const data = await res.json();
+        // If backend returns code or metadata, optionally update state
+        if (data?.code) setActiveCode(data.code);
+        if (data?.lastConsoleLine) setMessages(prev => [...prev, data.lastConsoleLine]);
+        return data;
+      } catch {
+        return null;
+      }
+    }
+
   return (
       <ServerContext.Provider value={{
           messages,
@@ -278,6 +312,8 @@ export function ServerContextProvider({ children }) {
           vmBack,
           vmForward,
           runProgram,
+
+          uploadProgramFile,
 
           consoleLines,
           clearConsole,

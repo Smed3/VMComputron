@@ -1,14 +1,18 @@
-import { useContext, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import styles from './Header.module.css';
 import { ThemeContext } from '../../contexts/theme-context';
+import { useServerContext } from '../../contexts/ServerContext';
+import { useEditorContext } from '../../contexts/EditorContext.jsx';
 import Sun from './icons/Sun.jsx';
 import Moon from './icons/Moon.jsx';
 
 function Header() {
   const [openMenu, setOpenMenu] = useState(null);
-
+  const fileInputRef = useRef(null);
+ 
   const { theme, toggleTheme } = useContext(ThemeContext);
-
+  const { uploadProgramFile } = useServerContext();
+  const { newFile, saveFile, saveFileAs, updateTabContent, renameActiveTab } = useEditorContext();
   const toggleMenu = (menuName) => {
     setOpenMenu(openMenu === menuName ? null : menuName);
   };
@@ -21,16 +25,32 @@ function Header() {
     console.log(`File action: ${action}`);
     switch(action) {
       case 'new':
-        alert('New File: Create a new VM program');
+        newFile();
+        closeMenu();
+        alert('New file created');
         break;
       case 'open':
-        alert('Open File: Load an existing VM program');
+        // Trigger hidden file input
+        fileInputRef.current?.click();
         break;
       case 'save':
-        alert('Save: Save current program');
+        try {
+          saveFile();
+          alert('File saved');
+        } catch (err) {
+          alert(`Save failed: ${err.message}`);
+        } finally {
+          closeMenu();
+        }
         break;
       case 'saveAs':
-        alert('Save As: Save program with new name');
+        try {
+          saveFileAs();
+        } catch (err) {
+          alert(`Save As failed: ${err.message}`);
+        } finally {
+          closeMenu();
+        }
         break;
       case 'export':
         alert('Export: Export program as binary');
@@ -39,6 +59,27 @@ function Header() {
         break;
     }
     closeMenu();
+  };
+
+  const onFileSelected = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const result = await uploadProgramFile(file, { runAfterLoad: false, stepLimit: 1000 });
+      
+      // Read file content and update the active tab
+      const fileContent = await file.text();
+      updateTabContent(fileContent);
+      renameActiveTab(file.name.replace(/\.[^.]+$/, ''), file.name);
+      
+      alert(`Loaded: ${file.name}`);
+    } catch (err) {
+      alert(`Upload failed: ${err.message}`);
+    } finally {
+      // Reset input so selecting the same file again retriggers change
+      e.target.value = '';
+      closeMenu();
+    }
   };
 
   const handleSettingsAction = (action) => {
@@ -115,6 +156,13 @@ function Header() {
   return <>
     <header className={styles.header} onMouseLeave={closeMenu}>
       <div className={styles.title}>VMComputron IDE</div>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".txt,.asm,.cvm,.bin,.json"
+        style={{ display: 'none' }}
+        onChange={onFileSelected}
+      />
       
       <nav className={styles.menuBar}>
         {/* File Menu */}

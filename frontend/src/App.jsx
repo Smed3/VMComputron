@@ -4,6 +4,7 @@ import MemoryWindow from "./components/memoryWindow/MemoryWindow.jsx";
 import ConsoleWindow from "./components/consoleWindow/ConsoleWindow.jsx";
 import InstructionsWindow from './components/instructionsWindow/InstructionsWindow.jsx';
 import OnboardingHint from "./components/onboarding/OnboardingHint.jsx";
+import { EditorProvider } from "./contexts/EditorContext.jsx";
 
 import "simplebar-react/dist/simplebar.min.css";
 import Editor from "./components/editor/Editor.jsx";
@@ -20,6 +21,7 @@ function App() {
   const {messages, input, setInput, sendMessage} = useServerContext();
 
   return (
+    <EditorProvider>
     <div className={styles.App__wrapper}>
       <Header/>
       {/*<div>*/}
@@ -49,7 +51,8 @@ function App() {
           <MemoryWindow/>
         </div>
       </div>
-    </div>
+      </div>
+      </EditorProvider>
   )
 }
 

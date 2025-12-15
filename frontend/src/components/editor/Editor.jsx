@@ -1,8 +1,9 @@
 import Tabs from "./Tabs.jsx";
 import styles from './Editor.module.css';
 import InstructionsInput from "./InstructionsInput.jsx";
-import {useState} from "react";
+import { useState } from "react";
 import { useServerContext } from "../../contexts/ServerContext";
+import { useEditorContext } from "../../contexts/EditorContext.jsx";
 
 
 const Editor = ({ setEditorFilter }) => {
@@ -12,6 +13,15 @@ const Editor = ({ setEditorFilter }) => {
         vmForward,
         runProgram
     } = useServerContext();
+    const {
+        tabs,
+        activeTabId,
+        setActiveTabId,
+        activeTab,
+        updateTabContent,
+        addTab,
+        closeTab,
+    } = useEditorContext();
 
     const [busy, setBusy] = useState(false);
     const [error, setError] = useState(null);
@@ -30,16 +40,6 @@ const Editor = ({ setEditorFilter }) => {
         }
     };
 
-    const [tabs, setTabs] = useState([{ id: 1, name: "Tab 1", content: "" }]);
-    const [activeTabId, setActiveTabId] = useState(1);
-    const activeTab = tabs.find(t => t.id === activeTabId);
-
-    const updateTabContent = (newContent) => {
-        setTabs(tabs.map(t =>
-            t.id === activeTabId ? { ...t, content: newContent } : t
-        ));
-    };
-
     const onRun = async () => {
         if (!activeTab?.content) return;
 
@@ -56,9 +56,10 @@ const Editor = ({ setEditorFilter }) => {
     return (
         <div className={styles.EditorContainer}>
             <Tabs tabs={tabs}
-                  setTabs={setTabs}
                   activeTabId={activeTabId}
                   setActiveTabId={setActiveTabId}
+                onAddTab={addTab}
+                onCloseTab={closeTab}
                   onReset={safe(vmReset)}
                   onRun={onRun}
                   onBack={safe(vmBack)}
