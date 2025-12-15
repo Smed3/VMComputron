@@ -10,7 +10,7 @@ import static com.vmcomputron.cvmPackage.CvmRegisters.*;
 
 public class Computron extends JFrame {
 
-    // === Поля для ввода-вывода ===
+
     private boolean charAcquired = false;
     private char typedChar;
     private String numberString = "";
@@ -20,7 +20,6 @@ public class Computron extends JFrame {
     private static int fromPCValue = 0;
     private static int toPCValue = 65535;
 
-    // === UI Компоненты (объявлены, но не все инициализированы здесь ради краткости) ===
     private JTextArea screenText;
     private JScrollPane screenScrollPane;
 
@@ -34,7 +33,6 @@ public class Computron extends JFrame {
     private JTable helpTable;
     private JScrollPane helpScrollPane;
 
-    // === Конструктор ===
     public Computron() {
         initComponents();
         initScreen();
@@ -47,13 +45,11 @@ public class Computron extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // === Экран ввода-вывода ===
         screenText = new JTextArea(10, 50);
         screenText.setFont(new Font("Monospaced", Font.PLAIN, 14));
         screenScrollPane = new JScrollPane(screenText);
         add(screenScrollPane, BorderLayout.SOUTH);
 
-        // === Панель регистров ===
         JPanel regPanel = new JPanel(new GridLayout(9, 2));
         dispPC = new JTextField(8); dispPC.setEditable(false);
         dispSP = new JTextField(8); dispSP.setEditable(false);
@@ -77,7 +73,6 @@ public class Computron extends JFrame {
 
         add(regPanel, BorderLayout.NORTH);
 
-        // === Кнопки переключения регистров ===
         JPanel switchPanel = new JPanel();
         JButton pcBtn = new JButton("PC");
         pcBtn.addActionListener(e -> CvmSwitching.selectRegister(this, Switch.selPC, PC));
@@ -95,7 +90,7 @@ public class Computron extends JFrame {
         switchPanel.add(pcBtn); switchPanel.add(spBtn); switchPanel.add(aBtn);
         switchPanel.add(xBtn); switchPanel.add(rhBtn); switchPanel.add(rlBtn);
 
-        // === Кнопка Run ===
+
         runButton = new JButton("RUN");
         runButton.addActionListener(e -> {
             running = true;
@@ -105,7 +100,6 @@ public class Computron extends JFrame {
 
         add(switchPanel, BorderLayout.CENTER);
 
-        // === Битовые кнопки для REG и MEM (упрощённо) ===
         JPanel bitsPanel = new JPanel(new GridLayout(2, 16));
         for (int i = 15; i >= 0; i--) {
             final int bit = i;
@@ -123,13 +117,12 @@ public class Computron extends JFrame {
         }
         add(bitsPanel, BorderLayout.WEST);
 
-        // === Таблица помощи ===
+
         helpTable = new JTable(60, 3);
         helpTable.setEnabled(false);
         helpScrollPane = new JScrollPane(helpTable);
         add(helpScrollPane, BorderLayout.EAST);
 
-        // === Поля from/to PC ===
         JPanel pdPanel = new JPanel();
         fromPC = new JTextField("0", 6);
         toPC = new JTextField("65535", 6);
@@ -142,7 +135,6 @@ public class Computron extends JFrame {
         setLocationRelativeTo(null);
     }
 
-    // ======================= Методы отображения =======================
 
     public void displayPC(int value) { dispPC.setText(String.format("%05d", value)); }
     public void displaySP(int value) { dispSP.setText(String.format("%05d", value)); }
@@ -167,14 +159,12 @@ public class Computron extends JFrame {
     }
 
     public void switchButton(Switch sw, boolean state) {
-        // Необязательно, если используем только selectRegister()
     }
 
     public void switchOffrunButton() {
         runButton.setEnabled(true);
     }
 
-    // ======================= Ввод-вывод =======================
 
     public int receiveIFromScreen() {
         numberFormed = false;
@@ -227,7 +217,7 @@ public class Computron extends JFrame {
         screenText.append(String.valueOf(value) + "\n");
     }
 
-    // ======================= Вспомогательные методы =======================
+
 
     public static int getBeginPC() { return fromPCValue; }
     public static int getEndPC()   { return toPCValue; }

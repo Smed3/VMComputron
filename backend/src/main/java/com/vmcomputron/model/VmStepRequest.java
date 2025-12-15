@@ -1,5 +1,6 @@
 package com.vmcomputron.model;
 
-public record VmStepRequest(
-        Integer inputInt
-) {}
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+public record VmStepRequest() {}

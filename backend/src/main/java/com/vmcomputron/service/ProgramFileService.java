@@ -21,13 +21,13 @@ public class ProgramFileService {
         try {
             String text = new String(file.getBytes(), StandardCharsets.UTF_8);
 
-            // 1) парсим текст в слова (opcode/operand)
+
             List<Integer> words = ComputronAsmParser.parse(text);
 
-            // 2) загружаем в VM память
+
             loadToVm(words);
 
-            // 3) отдаём фронту/ curl результат
+
             return new ProgramParseResponse(
                     true,
                     null,
@@ -50,7 +50,7 @@ public class ProgramFileService {
             if (code == null) throw new IllegalArgumentException("code is null");
             String text = stripBom(code);
 
-            // 1) сохранить на диск (внутри проекта, чтобы точно было доступно)
+
             String safeName = (filename == null || filename.isBlank())
                     ? "program_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + ".txt"
                     : filename.replaceAll("[^a-zA-Z0-9._-]", "_");
@@ -60,7 +60,7 @@ public class ProgramFileService {
             Path saved = dir.resolve(safeName);
             Files.writeString(saved, text, StandardCharsets.UTF_8);
 
-            // 2) распарсить и загрузить в VM
+
             var words = ComputronAsmParser.parse(text);
             loadToVm(words);
 
@@ -86,7 +86,7 @@ public class ProgramFileService {
     }
 
     private void loadToVm(List<Integer> words) {
-        // твой метод как есть
+
         for (int i = 0; i < 256; i++) com.vmcomputron.cvmPackage.CvmRegisters.setM(i, 0);
         for (int i = 0; i < words.size(); i++) com.vmcomputron.cvmPackage.CvmRegisters.setM(i, words.get(i));
         com.vmcomputron.cvmPackage.CvmRegisters.setPC(0);

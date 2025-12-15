@@ -30,8 +30,6 @@ public class ProgramRAMController {
             console.append(ConsoleLine.info("Saved to: " + safe(resp.savedPath())));
             console.append(ConsoleLine.info("Parsing: OK"));
 
-            // что именно выводить — зависит от твоего парсера,
-            // но минимально можно показать "parsed.toString()"
             if (resp.parsed() != null) {
                 console.append(ConsoleLine.out("Parsed result: " + resp.parsed()));
             } else {

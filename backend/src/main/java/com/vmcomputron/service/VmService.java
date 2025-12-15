@@ -22,12 +22,14 @@ public class VmService {
 
         CvmRegisters.setPC(0);
         CvmRegisters.setSP(0);
-        CvmRegisters.setA(0);
+        CvmRegisters.setAFromVm(0);
         CvmRegisters.setX(0);
         CvmRegisters.setRH(0);
         CvmRegisters.setRL(0);
         CvmRegisters.setCpuError(0);
         CvmRegisters.setRunning(false);
+
+        CvmRegisters.clearAValid();
 
         console.clear();
         history.clear();
@@ -35,7 +37,7 @@ public class VmService {
         console.append(ConsoleLine.info("VM reset"));
     }
 
-    public synchronized StepResult step(Integer inputInt) {
+    public synchronized StepResult step() {
         int pc = CvmRegisters.getPC();
         int op = CvmRegisters.getM(pc) & 0xFFFF;
 
@@ -43,14 +45,15 @@ public class VmService {
         final int OP_INP  = 7;
         final int OP_OUT  = 10;
         final int OP_ADDM = 45;
+        final int OP_NOP  = 0;
 
-        // если ждём INP и inputInt не пришёл — это НЕ шаг, историю не пишем
-        if (op == OP_INP && inputInt == null) {
+
+        if (op == OP_INP && !CvmRegisters.isAValid()) {
             CvmRegisters.setRunning(true);
             return StepResult.waitingInput();
         }
 
-        // === snapshot ДО выполнения ===
+
         var memWrites = new ArrayList<VmHistory.MemWrite>();
         var snapBefore = new VmHistory.Snapshot(
                 CvmRegisters.getPC(),
@@ -68,7 +71,7 @@ public class VmService {
 
         CvmRegisters.setRunning(true);
 
-        // EXIT
+
         if (op == OP_EXIT) {
             CvmRegisters.setRunning(false);
             CvmRegisters.setPC(pc + 1);
@@ -77,28 +80,29 @@ public class VmService {
             return StepResult.ok(null, false);
         }
 
-        // INP
+
         if (op == OP_INP) {
-            CvmRegisters.setA(inputInt);
             CvmRegisters.setPC(pc + 1);
+            CvmRegisters.clearAValid();
 
             history.pushUndo(snapBefore);
             return StepResult.ok(null, true);
         }
 
-        // ADDM imm
+
         if (op == OP_ADDM) {
             int imm = CvmRegisters.getM(pc + 1);
             int a = CvmRegisters.getA();
             int res = (a + imm) & 0xFFFF;
-            CvmRegisters.setA(res);
+
+            CvmRegisters.setAFromVm(res);
             CvmRegisters.setPC(pc + 2);
 
             history.pushUndo(snapBefore);
             return StepResult.ok(null, true);
         }
 
-        // OUT
+
         if (op == OP_OUT) {
             int a = CvmRegisters.getA();
             ConsoleLine line = ConsoleLine.out(String.valueOf(a));
@@ -106,7 +110,6 @@ public class VmService {
 
             CvmRegisters.setPC(pc + 1);
 
-            // положим line в snapshot (чтобы при undo мы хотя бы знали, что печатали)
             var snapWithLine = new VmHistory.Snapshot(
                     snapBefore.pc(), snapBefore.sp(), snapBefore.a(), snapBefore.x(),
                     snapBefore.r(), snapBefore.rh(), snapBefore.rl(),
@@ -119,10 +122,10 @@ public class VmService {
             return StepResult.ok(line, true);
         }
 
-        final int OP_NOP = 0;
 
         if (op == OP_NOP) {
             CvmRegisters.setPC(pc + 1);
+            history.pushUndo(snapBefore);
             return StepResult.ok(null, true);
         }
 
@@ -133,31 +136,30 @@ public class VmService {
         VmHistory.Snapshot s = history.popUndo();
         if (s == null) return false;
 
-        // сохраним текущее состояние в redo (чтобы можно было шагнуть вперёд)
         VmHistory.Snapshot cur = new VmHistory.Snapshot(
                 CvmRegisters.getPC(), CvmRegisters.getSP(), CvmRegisters.getA(), CvmRegisters.getX(),
                 CvmRegisters.getR(), CvmRegisters.getRH(), CvmRegisters.getRL(),
                 CvmRegisters.isRunning(), CvmRegisters.getCpuError(),
-                List.of(), // memory writes для redo можно не хранить, пока мы не пишем память
+                List.of(),
                 null
         );
         history.pushRedo(cur);
 
-        // откат памяти (пока в твоих текущих опкодах memWrites пустой, но на будущее готово)
         for (VmHistory.MemWrite w : s.memWrites()) {
             CvmRegisters.setM(w.addr(), w.oldValue());
         }
 
-        // откат регистров
         CvmRegisters.setPC(s.pc());
         CvmRegisters.setSP(s.sp());
-        CvmRegisters.setA(s.a());
+        CvmRegisters.setAFromVm(s.a());
         CvmRegisters.setX(s.x());
         CvmRegisters.setR(s.r());
         CvmRegisters.setRH(s.rh());
         CvmRegisters.setRL(s.rl());
         CvmRegisters.setRunning(s.running());
         CvmRegisters.setCpuError(s.cpuError());
+
+        CvmRegisters.clearAValid();
 
         console.append(ConsoleLine.info("Step back"));
         return true;
@@ -167,17 +169,17 @@ public class VmService {
         VmHistory.Snapshot s = history.popRedo();
         if (s == null) return false;
 
-        // Самый простой forward: просто восстановить снимок регистров.
-        // (Позже можно сделать “реальный redo” — повторяя инструкцию, но тогда нужен полный детерминизм)
         CvmRegisters.setPC(s.pc());
         CvmRegisters.setSP(s.sp());
-        CvmRegisters.setA(s.a());
+        CvmRegisters.setAFromVm(s.a());
         CvmRegisters.setX(s.x());
         CvmRegisters.setR(s.r());
         CvmRegisters.setRH(s.rh());
         CvmRegisters.setRL(s.rl());
         CvmRegisters.setRunning(s.running());
         CvmRegisters.setCpuError(s.cpuError());
+
+        CvmRegisters.clearAValid();
 
         console.append(ConsoleLine.info("Step forward (state restore)"));
         return true;

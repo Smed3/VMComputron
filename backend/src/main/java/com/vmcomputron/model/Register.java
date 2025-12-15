@@ -15,7 +15,7 @@ public class Register {
         this.register = register.toUpperCase();
         this.newValue = newValue;
 
-        // Зажигаем лампочки по значению
+
         this.cpu = new int[16];
         int remaining = Math.abs(newValue);
         for (int i = 0; i < 16; i++) {
@@ -32,7 +32,7 @@ public class Register {
     public int getNewValue() { return newValue; }
     public int[] getCpu() { return cpu; }
 
-    // Фабричные методы
+
     public static Register pc(int value)  { return new Register("PC", value); }
     public static Register sp(int value)  { return new Register("SP", value); }
     public static Register a(int value)   { return new Register("A", value); }

@@ -5,7 +5,7 @@ import static com.vmcomputron.model.Register.CPU_BIT_VALUES;
 public class LoadStoreRequest {
     private String selectedRegister;  // "PC", "SP", "A", "X", "RH", "RL"
 
-    // Конструктор, геттер, сеттер
+
     public LoadStoreRequest() {}
 
     public LoadStoreRequest(String selectedRegister) {

@@ -14,7 +14,7 @@ public class VmHistory {
             float r, int rh, int rl,
             boolean running, int cpuError,
             List<MemWrite> memWrites,
-            ConsoleLine producedLine // если OUT что-то напечатал на этом шаге
+            ConsoleLine producedLine
     ) {}
 
     private final List<Snapshot> undo = new ArrayList<>();
@@ -27,7 +27,7 @@ public class VmHistory {
 
     public void pushUndo(Snapshot s) {
         undo.add(s);
-        redo.clear(); // если сделали новый шаг — redo история больше не валидна
+        redo.clear();
     }
 
     public Snapshot popUndo() {

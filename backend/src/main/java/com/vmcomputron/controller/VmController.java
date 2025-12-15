@@ -26,34 +26,21 @@ public class VmController {
     @PostMapping("/step")
     public VmStateResponse step(@RequestBody(required = false) VmStepRequest req) {
         try {
-            Integer input = (req == null ? null : req.inputInt());
-            var res = vm.step(input);
+            var res = vm.step();
             return state(true, res.line(), res.needsInput(), null);
         } catch (Exception e) {
             return state(false, null, false, e.getMessage());
         }
     }
 
-    /**
-     * Простой run: крутим step пока:
-     * - не EXIT (running=false)
-     * - или не needsInput=true
-     * - или не упали по ошибке
-     *
-     * stepLimit чтобы не зависнуть, если программа циклическая
-     */
     @PostMapping("/run")
     public VmStateResponse run(@RequestBody(required = false) VmStepRequest req,
                                @RequestParam(defaultValue = "10000") int stepLimit) {
         try {
-            Integer input = (req == null ? null : req.inputInt());
             ConsoleLine last = null;
 
             for (int i = 0; i < stepLimit; i++) {
-                var r = vm.step(input);
-
-                // input используем только один раз (для INP)
-                input = null;
+                var r = vm.step();
 
                 if (r.line() != null) last = r.line();
                 if (!r.running()) break;
@@ -86,6 +73,7 @@ public class VmController {
                 lastLine
         );
     }
+
     @PostMapping("/back")
     public VmStateResponse back() {
         boolean ok = vm.stepBack();
@@ -97,5 +85,4 @@ public class VmController {
         boolean ok = vm.stepForward();
         return state(ok, null, false, ok ? null : "Nothing to redo");
     }
-
 }

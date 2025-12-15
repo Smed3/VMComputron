@@ -27,10 +27,9 @@ export default function OnboardingHint({ onClose }) {
 
                 <div className={styles.text}>
                     <ol className={styles.list}>
-                        <li>Napíšte program alebo nahrajte súbor cez <b>Load</b></li>
+                        <li>Napíšte program</li>
                         <li>Spustite: <b>Run</b> alebo <b>Step</b></li>
                         <li>Sledujte: registre (PC/A/…) a RAM vpravo</li>
-                        <li>stiahnite si súbor pomocou príkazu <b>Store</b></li>
                     </ol>
 
                     <div className={styles.exampleTitle}>Príklad programu:</div>
@@ -42,7 +41,7 @@ EXIT`}
           </pre>
 
                     <div className={styles.tip}>
-                        Ak sa zobrazí „Waiting input“, zadajte číslo a stlačte tlačidlo <b>Step</b> ešte raz.
+                        Pozorne si prečítajte všetky pokyny k <b>Computronu</b>.
                     </div>
 
                     <div className={styles.actions}>

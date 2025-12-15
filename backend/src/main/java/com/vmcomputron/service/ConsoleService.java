@@ -24,7 +24,7 @@ public class ConsoleService {
         buffer.addLast(line);
         while (buffer.size() > MAX_LINES) buffer.removeFirst();
 
-        // push на фронт (стрим)
+
         messaging.convertAndSend("/topic/console", line);
     }
 

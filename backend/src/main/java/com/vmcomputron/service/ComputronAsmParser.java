@@ -5,8 +5,6 @@ import java.util.List;
 
 public class ComputronAsmParser {
 
-    // opcodes строго по enum opType в CvmALUnit
-    // NOP=0, ... INP=7, OUT=10, EXIT=5, ADDM=45 ...
     private static int opcode(String mnemonic) {
         return switch (mnemonic) {
             case "NOP" -> 0;
@@ -70,7 +68,7 @@ public class ComputronAsmParser {
     }
 
     private static boolean needsOperand(String mnemonic) {
-        // Всё, что в VM читает M[PC+1] как операнд
+
         return switch (mnemonic) {
             case "BZE", "JMP", "JSR",
                  "LDA", "LDAM", "LDAI", "LDAX",
@@ -90,37 +88,35 @@ public class ComputronAsmParser {
     private static int parseNumber(String s) {
         s = s.trim();
 
-        // hex, если вдруг встретится
+
         if (s.startsWith("0x") || s.startsWith("0X")) {
             return Integer.parseInt(s.substring(2), 16);
         }
 
-        // если начинается с 0 и состоит только из 0..7 => это octal
-        // (кроме "0")
         if (s.length() > 1 && s.charAt(0) == '0' && s.matches("[0-7]+")) {
             return Integer.parseInt(s, 8);
         }
 
-        // иначе считаем десятичным
+
         return Integer.parseInt(s, 10);
     }
 
 
     public static List<Integer> parse(String rawText) {
-        // убрать BOM (то самое "﻿" в preview)
+
         String text = rawText;
         if (!text.isEmpty() && text.charAt(0) == '\uFEFF') {
             text = text.substring(1);
         }
 
-        String[] lines = text.split("\\R"); // любые переводы строки
+        String[] lines = text.split("\\R");
         List<Integer> words = new ArrayList<>();
 
         for (int lineNo = 1; lineNo <= lines.length; lineNo++) {
             String line = lines[lineNo - 1].trim();
             if (line.isEmpty()) continue;
 
-            // опционально: комментарии
+
             int c1 = line.indexOf("//");
             if (c1 >= 0) line = line.substring(0, c1).trim();
             int c2 = line.indexOf("#");
@@ -138,7 +134,7 @@ public class ComputronAsmParser {
                     throw new IllegalArgumentException("Line " + lineNo + ": missing operand for " + mnemonic);
                 }
                 int operand = parseNumber(parts[1]);
-                // сейчас считаем, что десятичное
+
                 words.add(operand & 0xFFFF);
             }
         }
