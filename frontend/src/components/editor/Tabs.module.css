@@ -47,7 +47,8 @@
 }
 
 .TabActive {
-    width: 5rem;
+    width: fit-content;
+    padding: 0 0.5rem;
     height: 2rem;
     border-radius: 0.5rem 0.5rem 0 0;
     background-color: var(--color--background-active-button);
@@ -66,7 +67,8 @@
 }
 
 .TabInactive {
-    width: 4rem;
+    width: fit-content;
+    padding: 0 0.5rem;
     height: 1.5rem;
     border-radius: 0;
     background-color: var(--color--button--background);
